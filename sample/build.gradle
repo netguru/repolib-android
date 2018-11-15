@@ -17,21 +17,12 @@ android {
         targetSdkVersion 28
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
         versionName '0.1.0'
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
             versionNameSuffix "-DEBUG"
             applicationIdSuffix ".debug"
-            testCoverageEnabled true
-            debuggable true
-            minifyEnabled true
-            shrinkResources false
-            useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro', 'proguard-rules-test.pro'
         }
         release {
             debuggable false
@@ -39,8 +30,7 @@ android {
             shrinkResources true
             zipAlignEnabled true
             useProguard true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -142,4 +132,7 @@ dependencies {
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
+
+    //REPO LIB
+    implementation project(path: ':repolib')
 }
