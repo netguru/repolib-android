@@ -87,9 +87,6 @@
 -keep class com.squareup.leakcanary.** { *; }
 -dontwarn android.app.Notification
 
-# fabric
--dontwarn com.crashlytics.android.**
-
 # glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.AppGlideModule

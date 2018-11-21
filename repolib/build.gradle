@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 28
+        versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
+        versionName '0.1.0'
+        consumerProguardFiles 'proguard-rules.pro'
+
+        libraryVariants.all {
+            it.generateBuildConfig.enabled = false
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets.all {
+        it.java.srcDir "src/$it.name/kotlin"
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation libs.appCompat
+    implementation libs.kotlin
+    implementation libs.timber
+
+    //Rx
+    implementation libs.rxJava2
+    implementation (libs.rxKotlin2)  {
+        exclude module: 'rxjava'
+        exclude module: 'kotlin-stdlib'
+    }
+    implementation(libs.rxAndroid2) {
+        exclude module: 'rxjava'
+    }
+
+    // Unit testing
+    testImplementation test.junit
+    testImplementation test.mockito
+    testImplementation test.mockitoKotlin
+}
