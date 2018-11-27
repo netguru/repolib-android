@@ -1,6 +1,6 @@
 package co.netguru.strategy
 
-import co.netguru.DataSource
+import co.netguru.datasource.DataSource
 import io.reactivex.Flowable
 
 /**
@@ -18,14 +18,14 @@ sealed class StrategyActionType {
         override fun <T> mapToAction(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
-        ): Flowable<T> = localDataSource.dataStream()
+        ): Flowable<T> = localDataSource.dataOutput()
     }
 
     object OnlyRemote : StrategyActionType() {
         override fun <T> mapToAction(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
-        ): Flowable<T> = remoteDataSource.dataStream()
+        ): Flowable<T> = remoteDataSource.dataOutput()
     }
 
     object FirstLocalThenRemoteWithLocalUpdate : StrategyActionType() {
@@ -33,10 +33,10 @@ sealed class StrategyActionType {
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
         ): Flowable<T> = Flowable.merge(
-                localDataSource.dataStream(),
-                remoteDataSource.dataStream()
+                localDataSource.dataOutput(),
+                remoteDataSource.dataOutput()
                         .flatMap { localDataSource.update(it).andThen(Flowable.just(it)) }
-                        .mergeWith(localDataSource.dataStream())
+                        .mergeWith(localDataSource.dataOutput())
         )
     }
 
@@ -44,23 +44,25 @@ sealed class StrategyActionType {
         override fun <T> mapToAction(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
-        ): Flowable<T> = Flowable.merge<T>(localDataSource.dataStream(), remoteDataSource.dataStream())
+        ): Flowable<T> = Flowable.merge<T>(
+                localDataSource.dataOutput(), remoteDataSource.dataOutput()
+        )
     }
 
     object FirstRemoteThenLocalWithLocalUpdate : StrategyActionType() {
         override fun <T> mapToAction(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
-        ): Flowable<T> = remoteDataSource.dataStream()
+        ): Flowable<T> = remoteDataSource.dataOutput()
                 .flatMap { localDataSource.update(it).andThen(Flowable.just(it)) }
-                .mergeWith(localDataSource.dataStream())
+                .mergeWith(localDataSource.dataOutput())
     }
 
     object FirstRemoteThenLocalNoUpdate : StrategyActionType() {
         override fun <T> mapToAction(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>
-        ): Flowable<T> = remoteDataSource.dataStream()
-                .mergeWith(localDataSource.dataStream())
+        ): Flowable<T> = remoteDataSource.dataOutput()
+                .mergeWith(localDataSource.dataOutput())
     }
 }

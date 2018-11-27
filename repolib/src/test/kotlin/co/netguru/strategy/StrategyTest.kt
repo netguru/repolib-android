@@ -1,6 +1,6 @@
 package co.netguru.strategy
 
-import co.netguru.DataSource
+import co.netguru.datasource.DataSource
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -21,12 +21,13 @@ class StrategyTest {
             "remote 2",
             "remote 3"
     )
+
     private val localDataSource: DataSource<String> = mock {
-        on { dataStream() } doReturn Flowable.fromIterable(localData)
+        on { dataOutput() } doReturn Flowable.fromIterable(localData)
     }
 
     private val remoteDataSource: DataSource<String> = mock {
-        on { dataStream() } doReturn Flowable.fromIterable(remoteData)
+        on { dataOutput() } doReturn Flowable.fromIterable(remoteData)
     }
 
     private lateinit var strategy: TestStrategy

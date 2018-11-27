@@ -1,6 +1,6 @@
 package co.netguru.strategy
 
-import co.netguru.DataSource
+import co.netguru.datasource.DataSource
 import io.reactivex.Flowable
 
 abstract class Strategy<T> {
@@ -12,10 +12,10 @@ abstract class Strategy<T> {
     fun selectDataOutput(
             localDataSource: DataSource<T>,
             remoteDataSource: DataSource<T>
-    ): Flowable<T> {
-        return Flowable.fromCallable { selectScenarioForConditions() }
-                .flatMap { it.mapToAction(localDataSource, remoteDataSource) }
-    }
+    ): Flowable<T> = Flowable
+            .fromCallable { selectScenarioForConditions() }
+            .flatMap { it.mapToAction(localDataSource, remoteDataSource) }
+
 
     /**
      * Abstract method that should implement condition check for specific data type
