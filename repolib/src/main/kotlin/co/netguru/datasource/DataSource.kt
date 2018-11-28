@@ -13,7 +13,7 @@ abstract class DataSource<T> {
      * The methods returns [Flowable] that
      *
      * @return [Flowable] - reactive stream of data entity that is responsible for passing
-     * all data updates. To receive data call fetch with appropriate [Query]
+     * all data updates. To receive data call outputDataStream with appropriate [Query]
      */
     fun dataOutput(): Flowable<T> = dataOutputBehaviourSubject
             .toFlowable(BackpressureStrategy.LATEST)
@@ -34,7 +34,8 @@ abstract class DataSource<T> {
             .map {
                 dataOutputBehaviourSubject.onNext(it)
                 it
-            }.flatMapCompletable { Completable.complete() }
+            }.doOnError { dataOutputBehaviourSubject.onError(it) }
+            .flatMapCompletable { Completable.complete() }
 
     /**
      * The delete method allows to remove entity specified by the query param
