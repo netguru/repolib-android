@@ -1,6 +1,4 @@
-package co.netguru.datasource
-
-import co.netguru.TargetType
+package co.netguru.data
 
 //todo methods for this interface will be added later
 class Query<T>(

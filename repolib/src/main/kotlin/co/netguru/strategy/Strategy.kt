@@ -5,8 +5,6 @@ package co.netguru.strategy
  * and map condition to specific [StrategyType]
  */
 interface Strategy {
-
     fun outputStrategy(): StrategyType.SourceStrategy
-
     fun fetchingStrategy(): StrategyType.FetchingStrategy
 }
