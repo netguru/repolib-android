@@ -3,6 +3,8 @@ package co.netguru.datasource
 import co.netguru.TestDataEntity
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
+import io.reactivex.Flowable
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Spy
@@ -12,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class DataSourceTest {
 
     private val testDataEntity = TestDataEntity(99, "test")
-    private val query = object : Query<TestDataEntity> {}
+    private val query = Query<TestDataEntity>()
     private val dataList = mutableListOf(testDataEntity)
 
     @Spy
@@ -77,5 +79,34 @@ class DataSourceTest {
         val testSubscribed = dataSource.create(testDataEntity).test()
 
         testSubscribed.assertComplete()
+    }
+
+    @Test
+    fun `when fetch() called with query then data is published on dataOutput() stream`() {
+        dataList.add(testDataEntity.copy(id = 88))
+        dataList.add(testDataEntity.copy(id = 77))
+
+        val dataSubscriber = dataSource.dataOutput().test()
+        val fetchSubscriber = dataSource.fetch(query).test()
+
+        dataSubscriber.assertValueCount(dataList.size)
+        dataSubscriber.assertValues(dataList[0], dataList[1], dataList[2])
+        fetchSubscriber.assertComplete()
+        verify(dataSource).fetch(query)
+        verify(dataSource).query(query)
+    }
+
+    @Test
+    fun `when fetch() called with query and query return exception then publish it on both streams`() {
+        val error = Throwable()
+        whenever(dataSource.query(query)).thenReturn(Flowable.error(error))
+
+        val dataSubscriber = dataSource.dataOutput().test()
+        val fetchSubscriber = dataSource.fetch(query).test()
+
+        dataSubscriber.assertError(error)
+        fetchSubscriber.assertError(error)
+        verify(dataSource).fetch(query)
+        verify(dataSource).query(query)
     }
 }

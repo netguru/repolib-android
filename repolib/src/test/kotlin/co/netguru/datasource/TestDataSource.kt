@@ -11,7 +11,7 @@ class TestDataSource(private val data: List<TestDataEntity>) : DataSource<TestDa
 
     override fun create(entity: TestDataEntity): Completable = Completable.complete()
 
-    public override fun query(request: Query<TestDataEntity>)
+    public override fun query(query: Query<TestDataEntity>)
             : Flowable<TestDataEntity> = Flowable.fromIterable(data)
 
 }

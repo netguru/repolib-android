@@ -1,25 +1,12 @@
 package co.netguru.strategy
 
-import co.netguru.datasource.DataSource
-import io.reactivex.Flowable
+/**
+ * Abstract class that should implement conditions check for specific data type
+ * and map condition to specific [StrategyType]
+ */
+interface Strategy {
 
-abstract class Strategy<T> {
+    fun outputStrategy(): StrategyType.SourceStrategy
 
-    /**
-     * Select data source publishing order based on type/condition
-     * returned by selectScenarioForConditions(): StrategyActionType
-     */
-    fun selectDataOutput(
-            localDataSource: DataSource<T>,
-            remoteDataSource: DataSource<T>
-    ): Flowable<T> = Flowable
-            .fromCallable { selectScenarioForConditions() }
-            .flatMap { it.mapToAction(localDataSource, remoteDataSource) }
-
-
-    /**
-     * Abstract method that should implement condition check for specific data type
-     * and map condition to specific StrategyActionType
-     */
-    abstract fun selectScenarioForConditions(): StrategyActionType
+    fun fetchingStrategy(): StrategyType.FetchingStrategy
 }
