@@ -1,7 +1,8 @@
 package co.netguru
 
-import co.netguru.datasource.DataSource
-import co.netguru.datasource.Query
+import co.netguru.data.Query
+import co.netguru.data.TargetType
+import co.netguru.datasource.DataSourceController
 import co.netguru.strategy.Strategy
 import co.netguru.strategy.StrategyType
 import com.nhaarman.mockito_kotlin.*
@@ -26,14 +27,14 @@ internal class RepoLibTest {
             "remote 4"
     )
 
-    private val localDataSource: DataSource<String> = mock {
+    private val localDataSource: DataSourceController<String> = mock {
         on { dataOutput() } doReturn Flowable.fromIterable(localData)
         on { fetch(any()) } doReturn Completable.complete()
         on { delete(any()) } doReturn Completable.complete()
         on { update(any()) } doReturn Completable.complete()
     }
 
-    private val remoteDataSource: DataSource<String> = mock {
+    private val remoteDataSource: DataSourceController<String> = mock {
         on { dataOutput() } doReturn Flowable.fromIterable(remoteData)
         on { fetch(any()) } doReturn Completable.complete()
         on { create(any()) } doReturn Completable.complete()

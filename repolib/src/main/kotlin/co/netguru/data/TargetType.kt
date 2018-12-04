@@ -1,4 +1,4 @@
-package co.netguru
+package co.netguru.data
 
 enum class TargetType {
     LOCAL,

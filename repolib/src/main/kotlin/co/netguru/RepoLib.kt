@@ -1,7 +1,8 @@
 package co.netguru
 
-import co.netguru.datasource.DataSource
-import co.netguru.datasource.Query
+import co.netguru.data.Query
+import co.netguru.data.TargetType
+import co.netguru.datasource.DataSourceController
 import co.netguru.strategy.Strategy
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -9,8 +10,8 @@ import io.reactivex.Observable
 
 
 class RepoLib<T>(
-        private val localDataSource: DataSource<T>,
-        private val remoteDataSource: DataSource<T>,
+        private val localDataSource: DataSourceController<T>,
+        private val remoteDataSource: DataSourceController<T>,
         private val strategy: Strategy
 ) {
 
@@ -30,7 +31,7 @@ class RepoLib<T>(
                 ) { it.dataOutput() }
             }
 
-    fun fetch(query: Query<T>) = Flowable.just(strategy.fetchingStrategy())
+    fun fetch(query: Query<T>): Flowable<T> = Flowable.just(strategy.fetchingStrategy())
             .flatMap { strategyType ->
                 strategyType.applyStrategy(
                         localDataSource,
@@ -47,7 +48,7 @@ class RepoLib<T>(
 
     private fun applyFunction(
             sourceType: TargetType = TargetType.REMOTE,
-            function: (DataSource<T>) -> Completable): Completable = when (sourceType) {
+            function: (DataSourceController<T>) -> Completable): Completable = when (sourceType) {
         TargetType.LOCAL -> Observable.just(localDataSource).flatMapCompletable(function)
         TargetType.REMOTE -> Observable.just(remoteDataSource).flatMapCompletable(function)
         TargetType.BOTH -> {
