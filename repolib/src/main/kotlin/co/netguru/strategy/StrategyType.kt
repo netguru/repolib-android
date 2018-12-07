@@ -7,7 +7,7 @@ import io.reactivex.Flowable
 
 /**
  * Sealed class that contains predefined data flow's.
- * This data flows are used by to define strategy for specific data types
+ * This data flows are used by to define sourcingStrategy for specific data types
  */
 sealed class StrategyType {
 
@@ -17,8 +17,8 @@ sealed class StrategyType {
             dataSourceAction: (DataSourceController<T>) -> Flowable<T>
     ): Flowable<T>
 
-    abstract class FetchingStrategy : StrategyType() {
-        object OnlyLocal : FetchingStrategy() {
+    abstract class Fetch : StrategyType() {
+        object OnlyLocal : Fetch() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -26,7 +26,7 @@ sealed class StrategyType {
             ): Flowable<T> = localDataSource.applyAdditionalAction(dataSourceAction)
         }
 
-        object OnlyRemote : FetchingStrategy() {
+        object OnlyRemote : Fetch() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -34,7 +34,7 @@ sealed class StrategyType {
             ): Flowable<T> = remoteDataSource.applyAdditionalAction(dataSourceAction)
         }
 
-        object Both : FetchingStrategy() {
+        object Both : Fetch() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -46,9 +46,9 @@ sealed class StrategyType {
         }
     }
 
-    abstract class SourceStrategy : StrategyType() {
+    abstract class Source : StrategyType() {
 
-        object Local : SourceStrategy() {
+        object Local : Source() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -56,7 +56,7 @@ sealed class StrategyType {
             ): Flowable<T> = localDataSource.dataOutput()
         }
 
-        object Remote : SourceStrategy() {
+        object Remote : Source() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -64,7 +64,7 @@ sealed class StrategyType {
             ): Flowable<T> = remoteDataSource.dataOutput()
         }
 
-        object Merge : SourceStrategy() {
+        object Merge : Source() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -75,7 +75,7 @@ sealed class StrategyType {
             )
         }
 
-        object EmitLocalOnRemoteFailure : SourceStrategy() {
+        object EmitLocalOnRemoteFailure : Source() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,
@@ -84,7 +84,7 @@ sealed class StrategyType {
                     .onErrorResumeNext(localDataSource.dataOutput())
         }
 
-        object EmitLocalUpdatedByPrimary : SourceStrategy() {
+        object EmitLocalUpdatedByPrimary : Source() {
             override fun <T> applyStrategy(
                     localDataSource: DataSourceController<T>,
                     remoteDataSource: DataSourceController<T>,

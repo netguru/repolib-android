@@ -1,7 +1,7 @@
 package co.netguru.datasource
 
 import co.netguru.TestDataEntity
-import co.netguru.cache.Cache
+import co.netguru.cache.RequestQueue
 import co.netguru.data.Query
 import co.netguru.data.Request
 import co.netguru.data.RequestType
@@ -15,16 +15,14 @@ import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class CachedDataSourceControllerTest {
-
+class RemoteDataSourceControllerTest {
 
     private val testDataEntity = TestDataEntity(99)
     private val query: Query<TestDataEntity> = mock()
     private val captor = argumentCaptor<Request<TestDataEntity>>()
     private val list = mutableListOf(testDataEntity)
 
-    private val cacheMock: Cache<TestDataEntity> = mock {}
-    private val cachingValidator: CachingValidator = mock {}
+    private val requestQueueMock: RequestQueue<TestDataEntity> = mock {}
     private val dataSource: DataSource<TestDataEntity> = mock {
         on { fetch(any()) } doReturn Flowable.fromIterable(list)
         on { delete(any()) } doReturn Completable.complete()
@@ -33,32 +31,30 @@ class CachedDataSourceControllerTest {
     }
 
     @Spy
-    private val cacheDataSource = CachedDataSourceController(cacheMock, dataSource, cachingValidator)
+    private val cacheDataSource = RemoteDataSourceController(
+            dataSource,
+            requestQueueMock
+    )
 
     @Test
-    fun `when fetch() is subscribed then call fetch() and return data in output`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
+    fun `when fetch() is subscribed then call fetch() and return data in output without Queue interaction`() {
 
         val testSubscriber = cacheDataSource.fetch(query).test()
         val dataSubscriber = cacheDataSource.dataOutput().test()
 
         testSubscriber.assertComplete()
         dataSubscriber.assertValues(testDataEntity)
-        verify(cachingValidator).isOperationPermitted()
         verify(dataSource).fetch(captor.capture())
-        verify(cachingValidator).isOperationPermitted()
         val result = captor.firstValue
         Assert.assertEquals(query, result.query)
-        verify(cacheMock, never()).add(any())
         Assert.assertEquals(RequestType.FETCH, result.requestType)
-        verify(cacheMock).remove(result)
+        verify(requestQueueMock, never()).remove(result)
+        verify(requestQueueMock, never()).add(any())
     }
 
     @Test
-    fun `when fetch() is subscribed and throw exception then call query() and return exception on both streams and add request to cache`() {
+    fun `when fetch() is subscribed and throw exception then call query() and return exception on both streams without Queue interaction`() {
         val error = Throwable("test")
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(true)
         whenever(dataSource.fetch(any())).thenReturn(Flowable.error(error))
 
         val testSubscriber = cacheDataSource.fetch(query).test()
@@ -66,44 +62,24 @@ class CachedDataSourceControllerTest {
 
         testSubscriber.assertError(error)
         dataSubscriber.assertError(error)
-        verify(cachingValidator).isOperationPermitted()
         verify(dataSource).fetch(captor.capture())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock).add(any())
+        verify(requestQueueMock, never()).add(any())
         val result = captor.firstValue
         Assert.assertEquals(query, result.query)
         Assert.assertEquals(RequestType.FETCH, result.requestType)
-        verify(cacheMock, never()).remove(result)
+        verify(requestQueueMock, never()).remove(result)
     }
 
     @Test
     fun `when create() subscribed and request is possible with empty cache then call create()`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(true)
+        whenever(requestQueueMock.isEmpty()).thenReturn(true)
 
         val testSubscriber = cacheDataSource.create(testDataEntity).test()
 
         testSubscriber.assertComplete()
-        verify(cacheMock, never()).add(any())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock).isEmpty()
+        verify(requestQueueMock, never()).add(any())
+        verify(requestQueueMock).isEmpty()
         verify(dataSource).create(captor.capture())
-        Assert.assertEquals(RequestType.CREATE, captor.firstValue.requestType)
-        Assert.assertEquals(testDataEntity, captor.firstValue.entity)
-        Assert.assertNull(captor.firstValue.query)
-    }
-
-    @Test
-    fun `when create() subscribed and request is NOT possible then call addToCache`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(false)
-
-        val testSubscriber = cacheDataSource.create(testDataEntity).test()
-
-        testSubscriber.assertComplete()
-        verify(cacheMock).add(captor.capture())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock, never()).isEmpty()
-        verify(dataSource, never()).fetch(any())
         Assert.assertEquals(RequestType.CREATE, captor.firstValue.requestType)
         Assert.assertEquals(testDataEntity, captor.firstValue.entity)
         Assert.assertNull(captor.firstValue.query)
@@ -117,16 +93,15 @@ class CachedDataSourceControllerTest {
                 Request(RequestType.DELETE),
                 Request(RequestType.CREATE)
         )
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(false)
-        whenever(cacheMock.getAllRequests()).thenReturn(cachedRequest)
+        whenever(requestQueueMock.isEmpty()).thenReturn(false)
+        whenever(requestQueueMock.getAllRequests()).thenReturn(cachedRequest)
         val removeCaptor = argumentCaptor<Request<TestDataEntity>>()
 
         val testSubscriber = cacheDataSource.create(testDataEntity).test()
 
         testSubscriber.assertComplete()
-        verify(cacheMock).isEmpty()
-        verify(cacheMock).getAllRequests()
+        verify(requestQueueMock).isEmpty()
+        verify(requestQueueMock).getAllRequests()
         //Argument captor makes order inconsistent
         // - in normal use case order of the requests will be equal to initial order of method calls
         verify(dataSource).update(captor.capture())
@@ -137,7 +112,7 @@ class CachedDataSourceControllerTest {
         Assert.assertEquals(RequestType.DELETE, captor.allValues[2].requestType)
         Assert.assertEquals(RequestType.CREATE, captor.allValues[3].requestType)
         Assert.assertEquals(RequestType.CREATE, captor.allValues[4].requestType)
-        verify(cacheMock, times(cachedRequest.size + 1)).remove(removeCaptor.capture())
+        verify(requestQueueMock, times(cachedRequest.size + 1)).remove(removeCaptor.capture())
         Assert.assertEquals(captor.allValues[0].requestType, removeCaptor.allValues[0].requestType)
         Assert.assertEquals(captor.allValues[1].requestType, removeCaptor.allValues[1].requestType)
         Assert.assertEquals(captor.allValues[2].requestType, removeCaptor.allValues[2].requestType)
@@ -156,17 +131,16 @@ class CachedDataSourceControllerTest {
                 Request(RequestType.DELETE),
                 Request(RequestType.CREATE)
         )
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(false)
-        whenever(cacheMock.getAllRequests()).thenReturn(cachedRequest)
+        whenever(requestQueueMock.isEmpty()).thenReturn(false)
+        whenever(requestQueueMock.getAllRequests()).thenReturn(cachedRequest)
         val removeCaptor = argumentCaptor<Request<TestDataEntity>>()
 
         val dataSubscriber = cacheDataSource.dataOutput().test()
         val testSubscriber = cacheDataSource.create(testDataEntity).test()
 
         testSubscriber.assertComplete()
-        verify(cacheMock).isEmpty()
-        verify(cacheMock).getAllRequests()
+        verify(requestQueueMock).isEmpty()
+        verify(requestQueueMock).getAllRequests()
         verify(dataSource).fetch(captor.capture())
         verify(dataSource).update(captor.capture())
         verify(dataSource, times(2)).delete(captor.capture())
@@ -179,7 +153,7 @@ class CachedDataSourceControllerTest {
         Assert.assertEquals(RequestType.DELETE, captor.allValues[3].requestType)
         Assert.assertEquals(RequestType.CREATE, captor.allValues[4].requestType)
         Assert.assertEquals(RequestType.CREATE, captor.allValues[5].requestType)
-        verify(cacheMock, times(cachedRequest.size + 1)).remove(removeCaptor.capture())
+        verify(requestQueueMock, times(cachedRequest.size + 1)).remove(removeCaptor.capture())
         Assert.assertEquals(captor.allValues[0].requestType, removeCaptor.allValues[0].requestType)
         Assert.assertEquals(captor.allValues[1].requestType, removeCaptor.allValues[1].requestType)
         Assert.assertEquals(captor.allValues[2].requestType, removeCaptor.allValues[2].requestType)
@@ -190,15 +164,13 @@ class CachedDataSourceControllerTest {
 
     @Test
     fun `when update() subscribed and request is possible with empty cache then call performUpdate()`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(true)
+        whenever(requestQueueMock.isEmpty()).thenReturn(true)
 
         val testSubscriber = cacheDataSource.update(testDataEntity).test()
 
         testSubscriber.assertComplete()
-        verify(cacheMock, never()).add(any())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock).isEmpty()
+        verify(requestQueueMock, never()).add(any())
+        verify(requestQueueMock).isEmpty()
         verify(dataSource).update(captor.capture())
         Assert.assertEquals(RequestType.UPDATE, captor.firstValue.requestType)
         Assert.assertEquals(testDataEntity, captor.firstValue.entity)
@@ -206,49 +178,15 @@ class CachedDataSourceControllerTest {
     }
 
     @Test
-    fun `when update() subscribed and request is NOT possible then call addToCache`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(false)
-
-        val testSubscriber = cacheDataSource.update(testDataEntity).test()
-
-        testSubscriber.assertComplete()
-        verify(cacheMock).add(captor.capture())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock, never()).isEmpty()
-        verify(dataSource, never()).update(any())
-        Assert.assertEquals(RequestType.UPDATE, captor.firstValue.requestType)
-        Assert.assertEquals(testDataEntity, captor.firstValue.entity)
-        Assert.assertNull(captor.firstValue.query)
-    }
-
-    @Test
     fun `when delete() subscribed and request is possible with empty cache then call performDelete()`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(true)
-        whenever(cacheMock.isEmpty()).thenReturn(true)
+        whenever(requestQueueMock.isEmpty()).thenReturn(true)
 
         val testSubscriber = cacheDataSource.delete(query).test()
 
         testSubscriber.assertComplete()
-        verify(cacheMock, never()).add(any())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock).isEmpty()
+        verify(requestQueueMock, never()).add(any())
+        verify(requestQueueMock).isEmpty()
         verify(dataSource).delete(captor.capture())
-        Assert.assertEquals(RequestType.DELETE, captor.firstValue.requestType)
-        Assert.assertEquals(query, captor.firstValue.query)
-        Assert.assertNull(captor.firstValue.entity)
-    }
-
-    @Test
-    fun `when delete() subscribed and request is NOT possible then call addToCache`() {
-        whenever(cachingValidator.isOperationPermitted()).thenReturn(false)
-
-        val testSubscriber = cacheDataSource.delete(query).test()
-
-        testSubscriber.assertComplete()
-        verify(cacheMock).add(captor.capture())
-        verify(cachingValidator).isOperationPermitted()
-        verify(cacheMock, never()).isEmpty()
-        verify(dataSource, never()).delete(any())
         Assert.assertEquals(RequestType.DELETE, captor.firstValue.requestType)
         Assert.assertEquals(query, captor.firstValue.query)
         Assert.assertNull(captor.firstValue.entity)

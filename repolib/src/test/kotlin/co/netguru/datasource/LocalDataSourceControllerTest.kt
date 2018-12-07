@@ -14,7 +14,7 @@ import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class SimpleDataSourceControllerTest {
+class LocalDataSourceControllerTest {
 
     private val testDataEntity = TestDataEntity(99, "test")
     private val query = Query<TestDataEntity>()
@@ -29,7 +29,7 @@ class SimpleDataSourceControllerTest {
     }
 
     @Spy
-    private val dataSourceController = SimpleDataSourceController(dataSource)
+    private val dataSourceController = LocalDataSourceController(dataSource)
 
     @Test
     fun `when getData() subscribed and fetch() completed then return data`() {

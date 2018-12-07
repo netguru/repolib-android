@@ -19,7 +19,7 @@ interface DataSourceController<T> {
      * data emission on output stream. After successful resolution of Query<T> data will
      * be published to output stream if [dataOutput] [Flowable] is subscribed.
      *
-     * @param query object that contains constraints to find specific entity in SimpleDataSourceController
+     * @param query object that contains constraints to find specific entity in LocalDataSourceController
      *
      * @return [Completable] that will emmit complete event when query is resolved with success,
      *
@@ -30,7 +30,7 @@ interface DataSourceController<T> {
     /**
      * The delete method allows to remove entity specified by the query param
      *
-     * @param query object that contains constraints to find specific entity in SimpleDataSourceController
+     * @param query object that contains constraints to find specific entity in LocalDataSourceController
      *
      * @return [Completable] that will emmit complete event when query is resolved with success,
      *
@@ -39,9 +39,9 @@ interface DataSourceController<T> {
     fun delete(query: Query<T>): Completable
 
     /**
-     * Updates existing entity in SimpleDataSourceController passed in param
+     * Updates existing entity in LocalDataSourceController passed in param
      *
-     * @param entity data entity that will be updated in SimpleDataSourceController
+     * @param entity data entity that will be updated in LocalDataSourceController
      *
      * @return [Completable] that will emmit complete event when update is complete
      *

@@ -3,7 +3,7 @@ package co.netguru
 import co.netguru.data.Query
 import co.netguru.data.TargetType
 import co.netguru.datasource.DataSourceController
-import co.netguru.strategy.Strategy
+import co.netguru.strategy.SourcingStrategy
 import co.netguru.strategy.StrategyType
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Completable
@@ -43,51 +43,51 @@ internal class RepoLibTest {
     }
 
     private val testEntity = "test"
-    private val strategyMock: Strategy = mock()
+    private val sourcingStrategyMock: SourcingStrategy = mock()
     private val query: Query<String> = mock()
 
-    private val repoLib = RepoLib(localDataSource, remoteDataSource, strategyMock)
+    private val repoLib = RepoLib(localDataSource, remoteDataSource, sourcingStrategyMock)
 
 
     @Test
     fun `when only LOCAL fetching strategy is selected, then call fetch on LOCAL data source only`() {
-        whenever(strategyMock.fetchingStrategy()).thenReturn(StrategyType.FetchingStrategy.OnlyLocal)
+        whenever(sourcingStrategyMock.fetchingStrategy()).thenReturn(StrategyType.Fetch.OnlyLocal)
 
         val subscriber = repoLib.fetch(query).test()
 
         subscriber.assertComplete()
         verify(localDataSource).fetch(query)
         verify(remoteDataSource, never()).fetch(any())
-        verify(strategyMock).fetchingStrategy()
+        verify(sourcingStrategyMock).fetchingStrategy()
     }
 
     @Test
     fun `when only REMOTE fetching strategy is selected,  then call fetch on REMOTE data source only`() {
-        whenever(strategyMock.fetchingStrategy()).thenReturn(StrategyType.FetchingStrategy.OnlyRemote)
+        whenever(sourcingStrategyMock.fetchingStrategy()).thenReturn(StrategyType.Fetch.OnlyRemote)
 
         val subscriber = repoLib.fetch(query).test()
 
         subscriber.assertComplete()
         verify(localDataSource, never()).fetch(query)
         verify(remoteDataSource).fetch(any())
-        verify(strategyMock).fetchingStrategy()
+        verify(sourcingStrategyMock).fetchingStrategy()
     }
 
     @Test
     fun `when BOTH fetching strategy is selected, then call fetch on both data sources with same query object`() {
-        whenever(strategyMock.fetchingStrategy()).thenReturn(StrategyType.FetchingStrategy.Both)
+        whenever(sourcingStrategyMock.fetchingStrategy()).thenReturn(StrategyType.Fetch.Both)
 
         val subscriber = repoLib.fetch(query).test()
 
         subscriber.assertComplete()
         verify(localDataSource).fetch(query)
         verify(remoteDataSource).fetch(query)
-        verify(strategyMock).fetchingStrategy()
+        verify(sourcingStrategyMock).fetchingStrategy()
     }
 
     @Test
     fun `when output strategy is LOCAL then publish data from LOCAL data source only`() {
-        whenever(strategyMock.outputStrategy()).thenReturn(StrategyType.SourceStrategy.Local)
+        whenever(sourcingStrategyMock.outputStrategy()).thenReturn(StrategyType.Source.Local)
 
         val subscriber = repoLib.outputDataStream().test()
 
@@ -95,12 +95,12 @@ internal class RepoLibTest {
         subscriber.assertValues(localData[0], localData[1], localData[2])
         verify(localDataSource).dataOutput()
         verify(remoteDataSource, never()).dataOutput()
-        verify(strategyMock).outputStrategy()
+        verify(sourcingStrategyMock).outputStrategy()
     }
 
     @Test
     fun `when output strategy is REMOTE then publish data from REMOTE data source only`() {
-        whenever(strategyMock.outputStrategy()).thenReturn(StrategyType.SourceStrategy.Remote)
+        whenever(sourcingStrategyMock.outputStrategy()).thenReturn(StrategyType.Source.Remote)
 
         val subscriber = repoLib.outputDataStream().test()
 
@@ -108,12 +108,12 @@ internal class RepoLibTest {
         subscriber.assertValues(remoteData[0], remoteData[1], remoteData[2], remoteData[3])
         verify(localDataSource, never()).dataOutput()
         verify(remoteDataSource).dataOutput()
-        verify(strategyMock).outputStrategy()
+        verify(sourcingStrategyMock).outputStrategy()
     }
 
     @Test
     fun `when output strategy is MERGE then publish data from both data sources`() {
-        whenever(strategyMock.outputStrategy()).thenReturn(StrategyType.SourceStrategy.Merge)
+        whenever(sourcingStrategyMock.outputStrategy()).thenReturn(StrategyType.Source.Merge)
 
         val subscriber = repoLib.outputDataStream().test()
 
@@ -127,15 +127,15 @@ internal class RepoLibTest {
                 remoteData[2],
                 remoteData[3]
         )
-        verify(strategyMock).outputStrategy()
+        verify(sourcingStrategyMock).outputStrategy()
         verify(localDataSource).dataOutput()
         verify(remoteDataSource).dataOutput()
     }
 
     @Test
     fun `when output strategy is EmitSecondaryUpdatedWithPrimary, then get remote, update and emit local `() {
-        whenever(strategyMock.outputStrategy())
-                .thenReturn(StrategyType.SourceStrategy.EmitLocalUpdatedByPrimary)
+        whenever(sourcingStrategyMock.outputStrategy())
+                .thenReturn(StrategyType.Source.EmitLocalUpdatedByPrimary)
 
         val subscriber = repoLib.outputDataStream().test()
 
@@ -145,7 +145,7 @@ internal class RepoLibTest {
                 localData[1],
                 localData[2]
         )
-        verify(strategyMock).outputStrategy()
+        verify(sourcingStrategyMock).outputStrategy()
         verify(remoteDataSource).dataOutput()
         verify(localDataSource, times(remoteData.size)).update(any())
         verify(localDataSource).dataOutput()
@@ -153,8 +153,8 @@ internal class RepoLibTest {
 
     @Test
     fun `when output strategy is EmitSecondaryOnPrimaryFailure and remote return Exception, then emit local `() {
-        whenever(strategyMock.outputStrategy())
-                .thenReturn(StrategyType.SourceStrategy.EmitLocalOnRemoteFailure)
+        whenever(sourcingStrategyMock.outputStrategy())
+                .thenReturn(StrategyType.Source.EmitLocalOnRemoteFailure)
         whenever(remoteDataSource.dataOutput()).thenReturn(Flowable.error(Throwable()))
 
         val subscriber = repoLib.outputDataStream().test()
@@ -165,7 +165,7 @@ internal class RepoLibTest {
                 localData[1],
                 localData[2]
         )
-        verify(strategyMock).outputStrategy()
+        verify(sourcingStrategyMock).outputStrategy()
         verify(remoteDataSource).dataOutput()
         verify(localDataSource, never()).update(any())
         verify(localDataSource).dataOutput()
