@@ -1,4 +1,4 @@
-package co.netguru.cache
+package co.netguru.queue
 
 import co.netguru.data.Request
 

@@ -1,11 +1,11 @@
 package co.netguru.initializer
 
 import co.netguru.RepoLib
-import co.netguru.cache.RequestQueue
 import co.netguru.datasource.DataSource
-import co.netguru.datasource.DataSourceController
-import co.netguru.datasource.LocalDataSourceController
-import co.netguru.datasource.RemoteDataSourceController
+import co.netguru.datasource.QueueDataSourceController
+import co.netguru.queue.DefaultQueue
+import co.netguru.queue.RequestQueue
+import co.netguru.strategy.DefaultSourcingStrategy
 import co.netguru.strategy.SourcingStrategy
 import kotlin.properties.Delegates
 
@@ -13,11 +13,11 @@ import kotlin.properties.Delegates
 //todo defaults will be implemented in RPI-33
 class RepoLibBuilder<T> {
 
-    var localDataSourceController: DataSourceController<T> by Delegates.notNull()
+    var localDataSourceController: DataSource<T> by Delegates.notNull()
 
-    var remoteDataSourceController: DataSourceController<T> by Delegates.notNull()
+    var remoteDataSourceController: DataSource<T> by Delegates.notNull()
 
-    var sourcingStrategy: SourcingStrategy by Delegates.notNull()
+    var sourcingStrategy: SourcingStrategy = DefaultSourcingStrategy()
 
     fun build(): RepoLib<T> {
         return RepoLib(
@@ -34,29 +34,18 @@ fun <T> createRepo(init: RepoLibBuilder<T>.() -> Unit): RepoLib<T> {
     return builder.build()
 }
 
-open class LocalDataSourceControllerBuilder<T> {
+open class RemoteDataSourceControllerBuilder<T> {
+
     var dataSource: DataSource<T> by Delegates.notNull()
 
-    open fun build(): DataSourceController<T> {
-        return LocalDataSourceController(dataSource)
+    private var requestQueue: RequestQueue<T> = DefaultQueue()
+
+    fun build(): DataSource<T> {
+        return QueueDataSourceController(dataSource, requestQueue)
     }
 }
 
-open class RemoteDataSourceControllerBuilder<T> : LocalDataSourceControllerBuilder<T>() {
-    var requestQueue: RequestQueue<T> by Delegates.notNull()
-
-    override fun build(): DataSourceController<T> {
-        return RemoteDataSourceController(dataSource, requestQueue)
-    }
-}
-
-fun <T> createLocalController(init: LocalDataSourceControllerBuilder<T>.() -> Unit): DataSourceController<T> {
-    val builder = LocalDataSourceControllerBuilder<T>()
-    init(builder)
-    return builder.build()
-}
-
-fun <T> createRemoteControllerWithDefaultQueueStrategy(init: RemoteDataSourceControllerBuilder<T>.() -> Unit): DataSourceController<T> {
+fun <T> createRemoteController(init: RemoteDataSourceControllerBuilder<T>.() -> Unit): DataSource<T> {
     val builder = RemoteDataSourceControllerBuilder<T>()
     init(builder)
     return builder.build()
