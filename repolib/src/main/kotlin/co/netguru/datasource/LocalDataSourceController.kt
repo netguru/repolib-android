@@ -21,11 +21,10 @@ class LocalDataSourceController<E>(private val dataSource: DataSource<E>) : Data
                 query = query
         )
     }.flatMap { request -> dataSource.fetch(request) }
-            .map {
+            .doOnNext {
                 dataOutputBehaviourSubject.onNext(it)
-                it
             }.doOnError { dataOutputBehaviourSubject.onError(it) }
-            .flatMapCompletable { Completable.complete() }
+            .ignoreElements()
 
     override fun create(entity: E): Completable = Flowable.fromCallable {
         Request(

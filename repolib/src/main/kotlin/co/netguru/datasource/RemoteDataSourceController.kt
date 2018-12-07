@@ -24,32 +24,28 @@ class RemoteDataSourceController<T>(
                 requestType = RequestType.FETCH,
                 query = query
         )
-    }
-            .flatMapCompletable { executeRequest(it) }
+    }.flatMapCompletable { executeRequest(it) }
 
     override fun delete(query: Query<T>): Completable = Flowable.fromCallable {
         Request(
                 requestType = RequestType.DELETE,
                 query = query
         )
-    }
-            .flatMapCompletable { onRequest(it) }
+    }.flatMapCompletable { onRequest(it) }
 
     override fun update(entity: T): Completable = Flowable.fromCallable {
         Request(
                 requestType = RequestType.UPDATE,
                 entity = entity
         )
-    }
-            .flatMapCompletable { onRequest(it) }
+    }.flatMapCompletable { onRequest(it) }
 
     override fun create(entity: T): Completable = Flowable.fromCallable {
         Request(
                 requestType = RequestType.CREATE,
                 entity = entity
         )
-    }
-            .flatMapCompletable { onRequest(it) }
+    }.flatMapCompletable { onRequest(it) }
 
     private fun onFetchingError(error: Throwable): Flowable<T> = Flowable.error(error)
 
