@@ -2,7 +2,7 @@ package co.netguru.datasource
 
 import io.reactivex.Flowable
 
-fun <T> DataSourceController<T>.asFlowable(): Flowable<DataSourceController<T>> = Flowable.just(this)
+fun <T> DataSource<T>.asFlowable(): Flowable<DataSource<T>> = Flowable.just(this)
 
-fun <T> DataSourceController<T>.applyAdditionalAction(modifier: (DataSourceController<T>) -> Flowable<T>)
+fun <T> DataSource<T>.applyAdditionalAction(modifier: (DataSource<T>) -> Flowable<T>)
         : Flowable<T> = this.asFlowable().flatMap(modifier)
