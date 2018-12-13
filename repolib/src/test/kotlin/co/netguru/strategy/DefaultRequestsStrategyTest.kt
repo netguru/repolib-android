@@ -8,17 +8,17 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class DefaultSourcingStrategyTest {
+class DefaultRequestsStrategyTest {
 
-    private val defaultStrategy = DefaultSourcingStrategy()
+    private val defaultStrategy = DefaultRequestsStrategy()
 
     @Test
-    fun `for FETCH request return RemoteAndUpdateLocal`() {
+    fun `for FETCH request return default strategy - RemoteAndUpdateLocal`() {
         val request = Request<String>(RequestType.FETCH)
 
         val result = defaultStrategy.select(request)
 
-        Assert.assertEquals(StrategyType.Requests.RemoteAndUpdateLocal, result)
+        Assert.assertEquals(RequestStrategy.LocalAfterUpdateOrFailureOfRemote, result)
     }
 
     @Test
@@ -27,7 +27,7 @@ class DefaultSourcingStrategyTest {
 
         val result = defaultStrategy.select(request)
 
-        Assert.assertEquals(StrategyType.Requests.OnlyRemote, result)
+        Assert.assertEquals(RequestStrategy.OnlyRemote, result)
     }
 
     @Test
@@ -36,7 +36,7 @@ class DefaultSourcingStrategyTest {
 
         val result = defaultStrategy.select(request)
 
-        Assert.assertEquals(StrategyType.Requests.OnlyRemote, result)
+        Assert.assertEquals(RequestStrategy.OnlyRemote, result)
     }
 
     @Test
@@ -45,6 +45,6 @@ class DefaultSourcingStrategyTest {
 
         val result = defaultStrategy.select(request)
 
-        Assert.assertEquals(StrategyType.Requests.OnlyRemote, result)
+        Assert.assertEquals(RequestStrategy.OnlyRemote, result)
     }
 }

@@ -39,8 +39,6 @@
 }
 
 # Models!
-# TODO 07.09.2017 Rule should be adjusted to current project - all models used with GSON should keep their members name
-# TODO 07.09.2017 or all their members should be annotated with @SerializedName().
 -keepclassmembernames class co.netguru.repolib.data.**.model.** { *; }
 
 # app compat-v7

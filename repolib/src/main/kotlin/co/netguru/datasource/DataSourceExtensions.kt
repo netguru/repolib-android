@@ -1,8 +1,8 @@
 package co.netguru.datasource
 
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
-fun <T> DataSource<T>.asFlowable(): Flowable<DataSource<T>> = Flowable.just(this)
+fun <T> DataSource<T>.asObservable(): Observable<DataSource<T>> = Observable.just(this)
 
-fun <T> DataSource<T>.applyAdditionalAction(modifier: (DataSource<T>) -> Flowable<T>)
-        : Flowable<T> = this.asFlowable().flatMap(modifier)
+fun <T> DataSource<T>.applyAdditionalAction(modifier: (DataSource<T>) -> Observable<T>)
+        : Observable<T> = this.asObservable().flatMap(modifier)

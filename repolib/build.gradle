@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.vanniktech.android.junit.jacoco'
+
 
 android {
     compileSdkVersion 28
@@ -25,6 +27,29 @@ android {
 
     sourceSets.all {
         it.java.srcDir "src/$it.name/kotlin"
+    }
+
+    junitJacoco {
+        jacocoVersion='0.8.2'
+        excludes = ['android/databinding/**/*.class',
+                    '**/android/databinding/*Binding.class',
+                    '**/BR.*',
+                    '**/R.class',
+                    '**/R$*.class',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*',
+                    '**/*$ViewInjector*.*',
+                    '**/*$ViewBinder*.*',
+                    '**/*_MembersInjector.class',
+                    '**/Dagger*Component.class',
+                    '**/Dagger*Component$Builder.class',
+                    '**/*Module_*Factory.class',
+                    '**/AutoValue_*.*',
+                    '**/*JavascriptBridge.class',
+                    '**/Lambda$*.class',
+                    '**/Lambda.class',
+                    '**/*Lambda.class',
+                    '**/*Lambda*.class']
     }
 
 }

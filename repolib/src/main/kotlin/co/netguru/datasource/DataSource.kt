@@ -1,16 +1,15 @@
 package co.netguru.datasource
 
 import co.netguru.data.Request
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
 interface DataSource<E> {
 
-    fun create(request: Request<E>): Completable
+    fun create(request: Request<E>): Observable<E>
 
-    fun delete(request: Request<E>): Completable
+    fun delete(request: Request<E>): Observable<E>
 
-    fun fetch(request: Request<E>): Flowable<E>
+    fun fetch(request: Request<E>): Observable<E>
 
-    fun update(request: Request<E>): Completable
+    fun update(request: Request<E>): Observable<E>
 }
