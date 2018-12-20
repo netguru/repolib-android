@@ -1,4 +1,4 @@
-package co.netguru.data
+package co.netguru.repolibrx.data
 
 data class Request<T>(
         val type: RequestType,

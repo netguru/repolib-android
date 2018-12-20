@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 
 
+
 android {
     compileSdkVersion 28
 
@@ -57,9 +58,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.appCompat
     implementation libs.kotlin
-    implementation libs.timber
 
     //Rx
     implementation libs.rxJava2

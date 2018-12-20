@@ -1,11 +1,11 @@
-package co.netguru
+package co.netguru.repolibrx
 
-import co.netguru.data.Query
-import co.netguru.data.Request
-import co.netguru.data.RequestType
-import co.netguru.datasource.DataSource
-import co.netguru.strategy.RequestStrategy
-import co.netguru.strategy.RequestsStrategy
+import co.netguru.repolibrx.data.Query
+import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.data.RequestType
+import co.netguru.repolibrx.datasource.DataSource
+import co.netguru.repolibrx.strategy.RequestStrategy
+import co.netguru.repolibrx.strategy.RequestsStrategy
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import org.junit.Assert
@@ -49,7 +49,7 @@ internal class RepoLibTest {
     private val query: Query<String> = mock()
     private val requestCaptor = argumentCaptor<Request<String>>()
 
-    private val repoLib = RepoLib(localDataSource, remoteDataSource, requestsStrategyMock)
+    private val repoLib: RepoLibRx<String> = RepoLib(localDataSource, remoteDataSource, requestsStrategyMock)
 
     //Fetch tests
     @Test

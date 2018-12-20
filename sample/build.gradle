@@ -6,6 +6,7 @@ apply plugin: 'com.frogermcs.androiddevmetrics'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 28
@@ -34,7 +35,7 @@ android {
         }
     }
 
-    flavorDimensions "api"
+    flavorDimensions "API"
 
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
@@ -88,6 +89,12 @@ dependencies {
     // Support
     implementation libs.appCompat
     implementation libs.recyclerView
+
+    //LifeCycle
+    implementation libs.lifeCycleCommon
+    implementation libs.liveData
+    implementation libs.lifeCycleExtensions
+    implementation libs.viewModel
 
     // MVP
     implementation(libs.mosby) {

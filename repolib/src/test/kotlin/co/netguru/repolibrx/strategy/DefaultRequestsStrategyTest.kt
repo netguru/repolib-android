@@ -1,7 +1,7 @@
-package co.netguru.strategy
+package co.netguru.repolibrx.strategy
 
-import co.netguru.data.Request
-import co.netguru.data.RequestType
+import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.data.RequestType
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
