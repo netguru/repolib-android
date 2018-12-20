@@ -1,6 +1,6 @@
-package co.netguru.strategy
+package co.netguru.repolibrx.strategy
 
-import co.netguru.data.Request
+import co.netguru.repolibrx.data.Request
 
 /**
  * Abstract class that should implement conditions checks for specific data type

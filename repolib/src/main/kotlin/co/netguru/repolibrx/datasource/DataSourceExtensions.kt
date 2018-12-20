@@ -1,4 +1,4 @@
-package co.netguru.datasource
+package co.netguru.repolibrx.datasource
 
 import io.reactivex.Observable
 

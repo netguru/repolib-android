@@ -1,10 +1,10 @@
-package co.netguru.strategy
+package co.netguru.repolibrx.strategy
 
-import co.netguru.data.Request
-import co.netguru.data.RequestType
-import co.netguru.datasource.DataSource
-import co.netguru.datasource.applyAdditionalAction
-import co.netguru.datasource.asObservable
+import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.data.RequestType
+import co.netguru.repolibrx.datasource.DataSource
+import co.netguru.repolibrx.datasource.applyAdditionalAction
+import co.netguru.repolibrx.datasource.asObservable
 import io.reactivex.Observable
 
 /**

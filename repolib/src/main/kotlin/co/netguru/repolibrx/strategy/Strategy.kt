@@ -1,6 +1,6 @@
-package co.netguru.strategy
+package co.netguru.repolibrx.strategy
 
-import co.netguru.datasource.DataSource
+import co.netguru.repolibrx.datasource.DataSource
 import io.reactivex.Observable
 
 interface Strategy {

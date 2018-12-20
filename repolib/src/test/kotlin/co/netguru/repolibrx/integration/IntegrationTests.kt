@@ -1,10 +1,10 @@
-package co.netguru.integration
+package co.netguru.repolibrx.integration
 
-import co.netguru.TestDataEntity
-import co.netguru.data.Query
-import co.netguru.data.Request
-import co.netguru.datasource.DataSource
-import co.netguru.initializer.createRepo
+import co.netguru.repolibrx.TestDataEntity
+import co.netguru.repolibrx.data.Query
+import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.datasource.DataSource
+import co.netguru.repolibrx.initializer.createRepo
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import org.junit.Assert
@@ -61,7 +61,6 @@ class IntegrationTests {
 
     private val repoLib = createRepo<TestDataEntity> {
         localDataSourceController = localDataSourceMock
-
         remoteDataSourceController = remoteDataSourceMock
     }
 

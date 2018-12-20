@@ -1,6 +1,8 @@
 ext {
     // Versions
+    androidxVerion = '1.0.0'
     supportLibraryVersion = '28.0.0'
+    lifeCycleVersion = '2.0.0-rc01'
     daggerVersion = '2.15'
     okHttpVersion = '3.10.0'
     retrofitVersion = '2.3.0'
@@ -15,10 +17,14 @@ ext {
             ankoCommons             : "org.jetbrains.anko:anko-commons:$ankoVersion",
             ankoCommonsSupportV7    : "org.jetbrains.anko:anko-appcompat-v7-commons:$ankoVersion",
             ankoCommonsSupportV4    : "org.jetbrains.anko:anko-support-v4-commons:$ankoVersion",
-            appCompat               : "com.android.support:appcompat-v7:$supportLibraryVersion",
-            recyclerView            : "com.android.support:recyclerview-v7:$supportLibraryVersion",
-            annotations             : "com.android.support:support-annotations:$supportLibraryVersion",
-            constraintLayout        : "com.android.support.constraint:constraint-layout:1.0.2",
+            appCompat               : "androidx.appcompat:appcompat:$androidxVerion",
+            recyclerView            : "androidx.recyclerview:recyclerview:$androidxVerion",
+            annotations             : "androidx.recyclerview:support-annotations:$androidxVerion",
+            constraintLayout        : "androidx.recyclerview:constraint-layout:$androidxVerion",
+            lifeCycleCommon         : "androidx.lifecycle:lifecycle-common:$lifeCycleVersion",
+            liveData                : "androidx.lifecycle:lifecycle-livedata:$lifeCycleVersion",
+            viewModel               : "androidx.lifecycle:lifecycle-viewmodel:$lifeCycleVersion",
+            lifeCycleExtensions     : "androidx.lifecycle:lifecycle-extensions:$lifeCycleVersion",
             mosby                   : "com.hannesdorfmann.mosby3:mvp:$mosbyVersion",
             mosbyMvi                : "com.hannesdorfmann.mosby3:mvi:$mosbyVersion",
             mosbyViewState          : "com.hannesdorfmann.mosby3:viewstate:$mosbyVersion",
