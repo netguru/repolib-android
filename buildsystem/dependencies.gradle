@@ -19,6 +19,8 @@ ext {
             ankoCommonsSupportV4    : "org.jetbrains.anko:anko-support-v4-commons:$ankoVersion",
             appCompat               : "androidx.appcompat:appcompat:$androidxVerion",
             recyclerView            : "androidx.recyclerview:recyclerview:$androidxVerion",
+            material                : "com.google.android.material:material:$androidxVerion",
+            cardView                : "androidx.cardview:cardview:1.0.0",
             annotations             : "androidx.recyclerview:support-annotations:$androidxVerion",
             constraintLayout        : "androidx.recyclerview:constraint-layout:$androidxVerion",
             lifeCycleCommon         : "androidx.lifecycle:lifecycle-common:$lifeCycleVersion",

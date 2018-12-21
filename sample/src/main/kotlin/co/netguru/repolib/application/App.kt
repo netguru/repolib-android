@@ -1,22 +1,20 @@
 package co.netguru.repolib.application
 
+import co.netguru.repolib.feature.demo.di.MockingModule
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 import io.realm.Realm
-import javax.inject.Inject
+import timber.log.Timber
 
 class App : DaggerApplication() {
 
-    @Inject
-    lateinit var debugMetricsHelper: DebugMetricsHelper
-
     override fun onCreate() {
         super.onCreate()
-
-        debugMetricsHelper.init(this)
+        Timber.plant(Timber.DebugTree())
         Realm.init(this)
     }
 
     override fun applicationInjector(): AndroidInjector<App> =
-            DaggerApplicationComponent.builder().create(this)
+            DaggerApplicationComponent.builder()
+                    .mockingModule(MockingModule(this)).create(this)
 }

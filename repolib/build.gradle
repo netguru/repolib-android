@@ -70,6 +70,8 @@ dependencies {
         exclude module: 'rxjava'
     }
 
+    implementation libs.timber
+
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito
