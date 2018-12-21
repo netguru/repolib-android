@@ -3,9 +3,9 @@ package co.netguru.repolib.feature.demo.di
 import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
-import co.netguru.repolib.feature.demo.datasource.RealmDataSource
-import co.netguru.repolib.feature.demo.datasource.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.api.API
+import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
+import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.initializer.createRepo
