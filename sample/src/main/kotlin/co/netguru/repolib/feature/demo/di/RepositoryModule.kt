@@ -3,6 +3,7 @@ package co.netguru.repolib.feature.demo.di
 import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
+import co.netguru.repolib.feature.demo.data.DataEntity
 import co.netguru.repolib.feature.demo.datasource.api.API
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource

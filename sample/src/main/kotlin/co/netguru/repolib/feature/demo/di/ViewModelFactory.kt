@@ -3,6 +3,7 @@ package co.netguru.repolib.feature.demo.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.netguru.repolib.feature.demo.DemoViewModel
+import co.netguru.repolib.feature.demo.data.DataEntity
 import co.netguru.repolibrx.RepoLibRx
 import javax.inject.Inject
 

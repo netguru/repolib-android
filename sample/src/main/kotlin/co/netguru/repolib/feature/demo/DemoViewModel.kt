@@ -3,7 +3,7 @@ package co.netguru.repolib.feature.demo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import co.netguru.repolib.feature.demo.di.DataEntity
+import co.netguru.repolib.feature.demo.data.DataEntity
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
 import io.reactivex.disposables.CompositeDisposable

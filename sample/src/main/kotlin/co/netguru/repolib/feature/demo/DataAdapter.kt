@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.netguru.repolib.R
-import co.netguru.repolib.feature.demo.di.DataEntity
+import co.netguru.repolib.feature.demo.data.DataEntity
 import kotlinx.android.synthetic.main.item_layout.view.*
 
 class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
@@ -29,8 +29,9 @@ class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(resId, parent, false)
     ) {
-        fun bind(dataViewHolder: DataEntity) {
-            itemView.itemTitleTextView.text = dataViewHolder.value
+        fun bind(dataViewHolder: DataEntity) = with(itemView) {
+            itemTitleTextView.text = dataViewHolder.value
+            sourceTextView.text = dataViewHolder.sourceType.name
         }
     }
 }
