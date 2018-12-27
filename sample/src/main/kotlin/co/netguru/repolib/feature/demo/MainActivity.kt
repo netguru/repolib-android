@@ -13,7 +13,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     internal lateinit var factory: ViewModelFactory
-    val adapter = DataAdapter()
+    private val adapter = DataAdapter()
 
     private val demoViewModel: DemoViewModel by lazy {
         ViewModelProviders.of(this, factory)[DemoViewModel::class.java]
@@ -34,5 +34,9 @@ class MainActivity : DaggerAppCompatActivity() {
                 notifyDataSetChanged()
             }
         })
+
+        addButton.setOnClickListener {
+            demoViewModel.addNew(addNewEditText.text.toString())
+        }
     }
 }

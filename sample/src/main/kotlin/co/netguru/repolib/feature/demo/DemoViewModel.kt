@@ -47,6 +47,19 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DataEnt
                 )
     }
 
+    fun addNew(text: String) {
+        compositeDisposable += repoLibRx.create(DataEntity(-1, text))
+                .subscribeBy(
+                        onComplete = {
+                            Timber.d("created")
+                            liveData.postValue(items)
+                        },
+                        onError = {
+                            Timber.e(it)
+                        }
+                )
+    }
+
     override fun onCleared() {
         compositeDisposable.clear()
         super.onCleared()

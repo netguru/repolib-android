@@ -37,7 +37,6 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
                             id = entity?.id
                             value = entity?.value
                         }
-
             }
             entity
         }

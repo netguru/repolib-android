@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swipeToRefresh"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/addNewLabelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
 
-        <TextView
-            android:id="@+id/titleTextView"
+        <EditText
+            android:id="@+id/addNewEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:importantForAutofill="no"
+            tools:ignore="UnusedAttribute"/>
+
+        <Button
+            android:id="@+id/addButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/add"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+    </LinearLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-    </LinearLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

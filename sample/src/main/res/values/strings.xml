@@ -3,4 +3,5 @@
 
     <string name="app_name">RepoLib example app</string>
     <string name="sourceLabel">source</string>
+    <string name="add">Add</string>
 </resources>
