@@ -1,4 +1,4 @@
-package co.netguru.data
+package co.netguru.repolibrx.data
 
 enum class RequestType {
     CREATE,

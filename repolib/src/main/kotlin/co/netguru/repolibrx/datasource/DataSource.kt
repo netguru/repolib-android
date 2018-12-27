@@ -1,6 +1,6 @@
-package co.netguru.datasource
+package co.netguru.repolibrx.datasource
 
-import co.netguru.data.Request
+import co.netguru.repolibrx.data.Request
 import io.reactivex.Observable
 
 interface DataSource<E> {

@@ -1,11 +1,10 @@
-package co.netguru.strategy
+package co.netguru.repolibrx.strategy
 
-import co.netguru.data.Request
-import co.netguru.data.RequestType
+import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.data.RequestType
 
 class DefaultRequestsStrategy(
-        private val requestsStrategy: RequestStrategy = RequestStrategy
-                .LocalAfterUpdateOrFailureOfRemote
+        private val requestsStrategy: RequestStrategy = RequestStrategy.LocalAfterUpdateOrFailureOfRemote
 ) : RequestsStrategy {
 
     override fun <T> select(request: Request<T>): Strategy = if (request.type == RequestType.FETCH) {
