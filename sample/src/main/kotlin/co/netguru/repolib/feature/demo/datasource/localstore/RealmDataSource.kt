@@ -1,6 +1,6 @@
 package co.netguru.repolib.feature.demo.datasource.localstore
 
-import co.netguru.repolib.feature.demo.data.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.data.SourceType
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
@@ -10,13 +10,13 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 
 //todo logic for all methods
-class RealmDataSource(private val realmConfiguration: RealmConfiguration) : DataSource<DataEntity> {
+class RealmDataSource(private val realmConfiguration: RealmConfiguration) : DataSource<DemoDataEntity> {
 
-    private val daoToEntityMapper: (DataDao) -> DataEntity = {
-        DataEntity(it.id!!, it.value!!, SourceType.LOCAL)
+    private val daoToEntityMapperDemo: (DataDao) -> DemoDataEntity = {
+        DemoDataEntity(it.id!!, it.value!!, SourceType.LOCAL)
     }
 
-    override fun fetch(request: Request<DataEntity>): Observable<DataEntity> = executeLambdaForRealm { realm ->
+    override fun fetch(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         realm.where(DataDao::class.java)
                 .findAllAsync()
                 .asFlowable()
@@ -24,25 +24,25 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
                 .map { realm.copyFromRealm(it) }
                 .flatMap { Flowable.fromIterable(it) }
                 .cast(DataDao::class.java)
-                .map(daoToEntityMapper)
+                .map(daoToEntityMapperDemo)
                 .toObservable()
     }
 
-    override fun create(request: Request<DataEntity>): Observable<DataEntity> = executeLambdaForRealm { realm ->
+    override fun create(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Observable.fromCallable {
-            val entity: DataEntity? = request.entity
+            val entityDemo: DemoDataEntity? = request.entity
             realm.executeTransaction {
                 realm.createObject(DataDao::class.java)
                         .apply {
-                            id = entity?.id
-                            value = entity?.value
+                            id = entityDemo?.id
+                            value = entityDemo?.value
                         }
             }
-            entity
+            entityDemo
         }
     }
 
-    override fun delete(request: Request<DataEntity>): Observable<DataEntity> = executeLambdaForRealm { realm ->
+    override fun delete(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         realm.where(DataDao::class.java)
                 .findAllAsync()
                 .asFlowable()
@@ -52,10 +52,10 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
                     }
                 }.toObservable()
                 .flatMap { Observable.fromIterable(it) }
-                .map(daoToEntityMapper)
+                .map(daoToEntityMapperDemo)
     }
 
-    override fun update(request: Request<DataEntity>): Observable<DataEntity> = executeLambdaForRealm { realm ->
+    override fun update(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Observable.fromCallable {
             realm.where(DataDao::class.java)
                     .findFirst()
@@ -69,11 +69,11 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
                         }
                     }
                     item
-                }.map(daoToEntityMapper)
+                }.map(daoToEntityMapperDemo)
     }
 
     //  todo to use it after refactor
-    private fun executeLambdaForRealm(realmAction: (Realm) -> Observable<DataEntity>) = Observable.using(
+    private fun executeLambdaForRealm(realmAction: (Realm) -> Observable<DemoDataEntity>) = Observable.using(
             { Realm.getInstance(realmConfiguration) },
             realmAction,
             { realm -> realm.close() }

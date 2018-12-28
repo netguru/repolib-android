@@ -3,7 +3,7 @@ package co.netguru.repolib.feature.demo.di
 import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
-import co.netguru.repolib.feature.demo.data.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.datasource.api.API
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
@@ -61,21 +61,21 @@ class RepositoryModule {
     @Provides
     @LocalDataSourceQualifier
     fun provideLocalDataSource(realmConfiguration: RealmConfiguration)
-            : DataSource<DataEntity> = RealmDataSource(realmConfiguration)
+            : DataSource<DemoDataEntity> = RealmDataSource(realmConfiguration)
 
     @AppScope
     @Provides
     @RemoteDataSourceQualifier
     fun provideRemoteDataSource(api: API)
-            : DataSource<DataEntity> = RetrofitDataSource(api)
+            : DataSource<DemoDataEntity> = RetrofitDataSource(api)
 
     @AppScope
     @Provides
     fun provideRepoLibRx(
-            @LocalDataSourceQualifier localDataSource: DataSource<DataEntity>,
-            @RemoteDataSourceQualifier remoteDataSource: DataSource<DataEntity>
-    ): RepoLibRx<DataEntity> = createRepo {
-        localDataSourceController = localDataSource
-        remoteDataSourceController = remoteDataSource
+            @LocalDataSourceQualifier localDemoDataSource: DataSource<DemoDataEntity>,
+            @RemoteDataSourceQualifier remoteDemoDataSource: DataSource<DemoDataEntity>
+    ): RepoLibRx<DemoDataEntity> = createRepo {
+        localDataSourceController = localDemoDataSource
+        remoteDataSourceController = remoteDemoDataSource
     }
 }

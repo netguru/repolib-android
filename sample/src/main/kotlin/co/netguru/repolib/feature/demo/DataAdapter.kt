@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.netguru.repolib.R
-import co.netguru.repolib.feature.demo.data.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import kotlinx.android.synthetic.main.item_layout.view.*
 
 class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
 
-    var items = listOf<DataEntity>()
+    var items = listOf<DemoDataEntity>()
 
     override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -29,9 +29,9 @@ class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(resId, parent, false)
     ) {
-        fun bind(dataViewHolder: DataEntity) = with(itemView) {
-            itemTitleTextView.text = dataViewHolder.value
-            sourceTextView.text = dataViewHolder.sourceType.name
+        fun bind(demoDataViewHolder: DemoDataEntity) = with(itemView) {
+            itemTitleTextView.text = demoDataViewHolder.value
+            sourceTextView.text = demoDataViewHolder.sourceType.name
         }
     }
 }

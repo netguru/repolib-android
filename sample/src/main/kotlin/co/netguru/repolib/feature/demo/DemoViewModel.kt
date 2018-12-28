@@ -3,7 +3,7 @@ package co.netguru.repolib.feature.demo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import co.netguru.repolib.feature.demo.data.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
 import io.reactivex.disposables.CompositeDisposable
@@ -12,12 +12,12 @@ import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 import javax.inject.Inject
 
-class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DataEntity>) : ViewModel() {
+class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDataEntity>) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private val items = mutableListOf<DataEntity>()
-    private val liveData = MutableLiveData<List<DataEntity>>()
-    private val query = object : Query<DataEntity> {}
+    private val items = mutableListOf<DemoDataEntity>()
+    private val liveData = MutableLiveData<List<DemoDataEntity>>()
+    private val query = object : Query<DemoDataEntity> {}
 
     init {
         compositeDisposable += repoLibRx.outputDataStream()
@@ -32,7 +32,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DataEnt
 
     }
 
-    fun data(): LiveData<List<DataEntity>> = liveData
+    fun data(): LiveData<List<DemoDataEntity>> = liveData
 
     fun refresh() {
         compositeDisposable += repoLibRx.fetch(query = query)
@@ -48,7 +48,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DataEnt
     }
 
     fun addNew(text: String) {
-        compositeDisposable += repoLibRx.create(DataEntity(-1, text))
+        compositeDisposable += repoLibRx.create(DemoDataEntity(-1, text))
                 .subscribeBy(
                         onComplete = {
                             Timber.d("created")

@@ -1,25 +1,27 @@
 package co.netguru.repolib.feature.demo.datasource.api
 
-import co.netguru.repolib.feature.demo.data.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
+import co.netguru.repolib.feature.demo.data.SourceType
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
 import io.reactivex.Observable
 
-class RetrofitDataSource(api: API) : DataSource<DataEntity> {
+//todo add mapping from API MODELS to local models
+class RetrofitDataSource(private val api: API) : DataSource<DemoDataEntity> {
 
-    override fun create(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(1, "create remote")
+    private val mapper: (RemoteDataEntity) -> DemoDataEntity = {
+        DemoDataEntity(it.id, it.note, SourceType.REMOTE)
     }
 
-    override fun delete(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(2, "delete remote")
-    }
+    override fun fetch(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = api.get()
+            .flatMap { Observable.fromIterable(it) }.map(mapper)
 
-    override fun fetch(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(3, "fetch remote")
-    }
+    override fun create(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.create().map(mapper)
 
-    override fun update(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(4, "update remote")
-    }
+    override fun delete(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.delete().toObservable()
+
+    override fun update(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.update().map(mapper)
 }
