@@ -7,6 +7,7 @@ import co.netguru.repolib.R
 import co.netguru.repolib.feature.demo.di.ViewModelFactory
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.main_activity.*
+import org.jetbrains.anko.longToast
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -27,10 +28,11 @@ class MainActivity : DaggerAppCompatActivity() {
         swipeToRefresh.setOnRefreshListener { demoViewModel.refresh() }
         recyclerView.adapter = adapter
 
-        demoViewModel.data().observe(this, Observer { items ->
+        demoViewModel.data().observe(this, Observer { viewData ->
             swipeToRefresh.isRefreshing = false
             adapter.apply {
-                this.items = items
+                this.items = viewData.items
+                viewData.error?.let { longToast(it) }
                 notifyDataSetChanged()
             }
         })

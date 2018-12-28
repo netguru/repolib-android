@@ -18,7 +18,7 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
 
     override fun fetch(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         realm.where(DataDao::class.java)
-                .findAllAsync()
+                .findAll()
                 .asFlowable()
                 .filter { it.isLoaded }
                 .map { realm.copyFromRealm(it) }
