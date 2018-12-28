@@ -33,7 +33,7 @@ class DataLayerModule {
 
     @AppScope
     @Provides
-    fun provideOkHttp(interceptor: MockingInterceptor): OkHttpClient = OkHttpClient
+    fun provideOkHttp(interceptor: Interceptor): OkHttpClient = OkHttpClient
             .Builder()
             .addInterceptor(interceptor)
             .build()
