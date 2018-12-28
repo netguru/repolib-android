@@ -14,7 +14,6 @@ class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
     internal lateinit var factory: ViewModelFactory
-    private val adapter = DataAdapter()
 
     private val demoViewModel: DemoViewModel by lazy {
         ViewModelProviders.of(this, factory)[DemoViewModel::class.java]
@@ -25,13 +24,14 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.main_activity)
         super.onCreate(savedInstanceState)
 
-        swipeToRefresh.setOnRefreshListener { demoViewModel.refresh() }
+        val adapter = DataAdapter(demoViewModel.itemActionSubject())
         recyclerView.adapter = adapter
+        swipeToRefresh.setOnRefreshListener { demoViewModel.refresh() }
 
         demoViewModel.data().observe(this, Observer { viewData ->
             swipeToRefresh.isRefreshing = false
             adapter.apply {
-                this.items = viewData.items
+                this.items = viewData.items.reversed()
                 viewData.error?.let { longToast(it) }
                 notifyDataSetChanged()
             }
@@ -42,3 +42,4 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 }
+

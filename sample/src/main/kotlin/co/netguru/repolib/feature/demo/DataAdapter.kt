@@ -5,16 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.netguru.repolib.R
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_layout.view.*
 
-class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
+class DataAdapter(private val publishSubject: PublishSubject<DemoDataEntity>) : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
 
     var items = listOf<DemoDataEntity>()
 
     override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-    ): DataViewHolder = DataViewHolder(parent, R.layout.item_layout)
+    ): DataViewHolder = DataViewHolder(parent, R.layout.item_layout, publishSubject)
 
     override fun getItemCount(): Int = items.size
 
@@ -25,13 +26,15 @@ class DataAdapter : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
 
     class DataViewHolder(
             parent: ViewGroup,
-            resId: Int
+            resId: Int,
+            private val publishSubject: PublishSubject<DemoDataEntity>
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(resId, parent, false)
     ) {
         fun bind(demoDataViewHolder: DemoDataEntity) = with(itemView) {
             itemTitleTextView.text = demoDataViewHolder.value
             sourceTextView.text = demoDataViewHolder.sourceType.name
+            removeImageViewButton.setOnClickListener { publishSubject.onNext(demoDataViewHolder) }
         }
     }
 }

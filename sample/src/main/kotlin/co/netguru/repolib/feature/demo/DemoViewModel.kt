@@ -10,6 +10,7 @@ import co.netguru.repolibrx.data.Query
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -18,7 +19,8 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     private val compositeDisposable = CompositeDisposable()
     private val items = mutableListOf<DemoDataEntity>()
     private val liveData = MutableLiveData<ViewData>()
-    private val query = object : Query<DemoDataEntity> {}
+    private val query = object : Query<DemoDataEntity>() {}
+    private val publishSubject = PublishSubject.create<DemoDataEntity>()
 
     init {
         compositeDisposable += repoLibRx.outputDataStream()
@@ -36,6 +38,20 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                         }
                 )
 
+        publishSubject.doOnNext { Timber.d("removing: $it") }
+                .flatMapCompletable {
+                    repoLibRx.delete(object : Query<DemoDataEntity>(it) {})
+                }
+                .subscribeBy(
+                        onComplete = {
+                            Timber.d("deleted")
+                            liveData.postValue(ViewData(items = items))
+                        },
+                        onError = {
+                            Timber.e(it)
+                            liveData.postValue(ViewData(it.message, items))
+                        }
+                )
     }
 
     fun data(): LiveData<ViewData> = liveData
@@ -77,4 +93,6 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
         compositeDisposable.clear()
         super.onCleared()
     }
+
+    fun itemActionSubject(): PublishSubject<DemoDataEntity> = publishSubject
 }
