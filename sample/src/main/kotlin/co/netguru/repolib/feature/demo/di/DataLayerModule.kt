@@ -5,6 +5,7 @@ import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.datasource.api.API
+import co.netguru.repolib.feature.demo.datasource.api.MockingInterceptor
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
 import co.netguru.repolibrx.RepoLibRx
@@ -15,36 +16,45 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.realm.RealmConfiguration
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
-class RepositoryModule {
+class DataLayerModule {
 
     //NETWORK DEPENDENCIES SETUP (OkHttp | GSON | RETROFIT)
+    //todo description of the Mocking interceptor
     @AppScope
     @Provides
-    fun provideOKHttp() = OkHttpClient.Builder().build()
+    fun provideInterceptor(): Interceptor = MockingInterceptor()
 
     @AppScope
     @Provides
-    fun provideGson() = GsonBuilder().create()
+    fun provideOkHttp(interceptor: MockingInterceptor): OkHttpClient = OkHttpClient
+            .Builder()
+            .addInterceptor(interceptor)
+            .build()
 
     @AppScope
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson) = Retrofit.Builder()
+    fun provideGSON(): Gson = GsonBuilder().create()
+
+    @AppScope
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            //todo
+            //todo explain why base is example
             .baseUrl("http://example.com")
             .client(okHttpClient)
             .build()
 
     @AppScope
     @Provides
-    fun provideApi(retrofit: Retrofit) = retrofit.create(API::class.java)
+    fun provideApi(retrofit: Retrofit): API = retrofit.create(API::class.java)
 
     //LOCAL STORAGE DEPENDENCIES SETUP (REALM)
     @AppScope
