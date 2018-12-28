@@ -4,6 +4,11 @@ import okhttp3.*
 
 class MockingInterceptor : Interceptor {
 
+    private val singleElement = "{\n" +
+            "  \"id\": 1,\n" +
+            "  \"note\": \"new element note\"\n" +
+            "}"
+
     private val content = "[\n" +
             "{\n" +
             "  \"id\": 1,\n" +
@@ -24,16 +29,23 @@ class MockingInterceptor : Interceptor {
             "]" +
             ""
 
-    override fun intercept(chain: Interceptor.Chain): Response = selectResponse(chain.request().url())
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val builder = Response.Builder()
+                .request(chain.request())
+                .message("ok")
+                .protocol(Protocol.HTTP_1_0)
 
-    private fun selectResponse(url: HttpUrl?): Response = when {
-        url.toString().contains("/getAll") -> Response.Builder()
-                .code(200)
+        return generateResponse(chain.request().url().toString(), builder).build()
+    }
+
+    private fun generateResponse(request: String, builder: Response.Builder): Response.Builder = when {
+        request.contains("/getAll") -> builder.code(200)
                 .body(ResponseBody.create(MediaType.parse("application/json"), content))
-                .build()
-        else -> Response.Builder()
-                .code(404)
-                .build()
+
+        request.contains("/create") -> builder.code(200)
+                .body(ResponseBody.create(MediaType.parse("application/json"), singleElement))
+        else -> builder.code(404)
+                .body(ResponseBody.create(MediaType.parse("application/json"), content))
     }
 
 
