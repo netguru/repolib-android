@@ -5,7 +5,6 @@ import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.datasource.api.API
-import co.netguru.repolib.feature.demo.datasource.api.MockingInterceptor
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
 import co.netguru.repolibrx.RepoLibRx
@@ -29,11 +28,6 @@ class DataLayerModule {
     @AppScope
     @Provides
     fun provideGSON(): Gson = GsonBuilder().create()
-
-    @AppScope
-    @Provides
-    //todo description of the Mocking interceptor
-    fun provideInterceptor(gson: Gson): Interceptor = MockingInterceptor(gson)
 
     @AppScope
     @Provides

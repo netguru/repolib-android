@@ -2,6 +2,7 @@ package co.netguru.repolib.application
 
 import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.feature.demo.di.DataLayerModule
+import co.netguru.repolib.feature.demo.di.MockingModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
@@ -13,10 +14,13 @@ import dagger.android.support.AndroidSupportInjectionModule
             AndroidInjectionModule::class,
             AndroidSupportInjectionModule::class,
             ActivityBindingModule::class,
+            MockingModule::class,
             DataLayerModule::class
         ]
 )
 interface ApplicationComponent : AndroidInjector<App> {
     @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<App>()
+    abstract class Builder : AndroidInjector.Builder<App>() {
+        abstract fun mockingModule(module: MockingModule): Builder
+    }
 }
