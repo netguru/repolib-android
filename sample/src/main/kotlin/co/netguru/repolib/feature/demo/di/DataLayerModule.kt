@@ -26,10 +26,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 class DataLayerModule {
 
     //NETWORK DEPENDENCIES SETUP (OkHttp | GSON | RETROFIT)
-    //todo description of the Mocking interceptor
     @AppScope
     @Provides
-    fun provideInterceptor(): Interceptor = MockingInterceptor()
+    fun provideGSON(): Gson = GsonBuilder().create()
+
+    @AppScope
+    @Provides
+    //todo description of the Mocking interceptor
+    fun provideInterceptor(gson: Gson): Interceptor = MockingInterceptor(gson)
 
     @AppScope
     @Provides
@@ -37,10 +41,6 @@ class DataLayerModule {
             .Builder()
             .addInterceptor(interceptor)
             .build()
-
-    @AppScope
-    @Provides
-    fun provideGSON(): Gson = GsonBuilder().create()
 
     @AppScope
     @Provides
