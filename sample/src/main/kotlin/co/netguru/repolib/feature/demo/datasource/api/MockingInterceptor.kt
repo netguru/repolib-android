@@ -1,10 +1,14 @@
 package co.netguru.repolib.feature.demo.datasource.api
 
+import android.net.ConnectivityManager
 import com.google.gson.Gson
 import okhttp3.*
 import okio.Buffer
 
-class MockingInterceptor(private val gson: Gson) : Interceptor {
+class MockingInterceptor(
+        private val gson: Gson,
+        private val connectivityManager: ConnectivityManager
+) : Interceptor {
 
     private val remoteDataBaseMock: MutableList<RemoteDataEntity> = arrayListOf(
             RemoteDataEntity(1, "remote note 1"),
@@ -19,8 +23,11 @@ class MockingInterceptor(private val gson: Gson) : Interceptor {
                 .request(chain.request())
                 .message("ok")
                 .protocol(Protocol.HTTP_1_0)
-
-        return generateResponse(chain.request(), builder).build()
+        return if (connectivityManager.activeNetworkInfo.isConnected) {
+            generateResponse(chain.request(), builder).build()
+        } else {
+            throw RuntimeException("Device is offline")
+        }
     }
 
     private fun generateResponse(request: Request, builder: Response.Builder): Response.Builder = when {
