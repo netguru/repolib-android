@@ -46,7 +46,8 @@ sealed class RequestStrategy : Strategy {
                 dataSourceAction: (DataSource<T>) -> Observable<T>
         ): Observable<T> = remoteDataSource.applyAdditionalAction(dataSourceAction)
                 .flatMapCompletable {
-                    localDataSource.update(Request(
+                    //                    todo check why UPDATE Doesn't work
+                    localDataSource.create(Request(
                             type = RequestType.UPDATE,
                             entity = it
                     )).ignoreElements()

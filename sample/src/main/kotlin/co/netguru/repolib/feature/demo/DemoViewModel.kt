@@ -34,7 +34,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                         },
                         onError = {
                             Timber.e(it)
-                            liveData.postValue(ViewData(it.message, items))
+                            liveData.postValue(ViewData(error = it.message, items = items))
                         }
                 )
 

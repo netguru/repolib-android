@@ -28,7 +28,7 @@ class RetrofitDataSource(private val api: API) : DataSource<DemoDataEntity> {
             : Observable<DemoDataEntity> = api.create(localToRemote(request.entity)).map(remoteToLocal)
 
     override fun delete(request: Request<DemoDataEntity>)
-            : Observable<DemoDataEntity> = api.delete(localToRemote(request.entity).id).toObservable()
+            : Observable<DemoDataEntity> = api.delete(localToRemote(request.query?.item).id).toObservable()
 
     override fun update(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = api.update(localToRemote(request.entity)).map(remoteToLocal)

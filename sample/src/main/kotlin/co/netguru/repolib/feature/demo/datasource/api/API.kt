@@ -9,7 +9,6 @@ interface API {
     @DELETE("delete")
     fun delete(@Query("id") id: Long): Completable
 
-    //    todo refactor
     @GET("getAll")
     fun get(): Observable<List<RemoteDataEntity>>
 
