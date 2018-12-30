@@ -22,8 +22,7 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
         Single.fromCallable {
             realm.where(DataDao::class.java)
                     .findAll()
-        }
-                .filter { it.isLoaded }
+        }.filter { it.isLoaded }
                 .map { realm.copyFromRealm(it) }
                 .toObservable()
                 .flatMap { Observable.fromIterable(it) }
@@ -50,7 +49,7 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Single.fromCallable {
             realm.where(DataDao::class.java)
-                    .equalTo("id", request.entity?.id)
+                    .equalTo("id", request.query?.item?.id)
                     .findAll()
         }.doOnSuccess { item ->
             realm.executeTransaction {
