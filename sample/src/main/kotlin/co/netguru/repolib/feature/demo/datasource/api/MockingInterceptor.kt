@@ -48,10 +48,10 @@ class MockingInterceptor(
     }
 
     private fun deleteElement(request: Request): String {
-        request.url().queryParameter("id")?.let {
-            val requestedId = it.toLong()
+        request.url().queryParameter("id")?.let { id ->
+            val requestedId = id.toLong()
             with(remoteDataBaseMock) {
-                removeAt(indexOf(find { it.id == requestedId }))
+                removeAt(indexOf(find { entity -> entity.id == requestedId }))
             }
         }
         return ""
