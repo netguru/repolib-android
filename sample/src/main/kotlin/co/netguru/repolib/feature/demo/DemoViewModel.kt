@@ -7,6 +7,7 @@ import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.data.ViewData
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -20,7 +21,8 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     private val items = mutableListOf<DemoDataEntity>()
     private val liveData = MutableLiveData<ViewData>()
     private val query = object : Query<DemoDataEntity>() {}
-    private val publishSubject = PublishSubject.create<DemoDataEntity>()
+    private val removeSubject = PublishSubject.create<DemoDataEntity>()
+    private val updateSubject = PublishSubject.create<DemoDataEntity>()
 
     init {
         compositeDisposable += repoLibRx.outputDataStream()
@@ -38,26 +40,26 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                         }
                 )
 
-        publishSubject.doOnNext { Timber.d("removing: $it") }
-                .flatMapCompletable {
-                    repoLibRx.delete(object : Query<DemoDataEntity>(it) {})
-                }
-                .subscribeBy(
-                        onComplete = {
-                            Timber.d("deleted")
-                            liveData.postValue(ViewData(items = items))
-                        },
-                        onError = {
-                            Timber.e(it)
-                            liveData.postValue(ViewData(it.message, items))
-                        }
-                )
+        removeSubject.doOnNext { Timber.d("removing... $it") }
+                .flatMap { itemToDelete ->
+                    repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
+                            .doOnComplete {
+                                Timber.d("removed")
+                                liveData.postValue(ViewData(items = items))
+                            }
+                            .doOnError {
+                                Timber.e(it)
+                                liveData.postValue(ViewData(it.message, items))
+                            }.andThen(Observable.just(itemToDelete))
+                            .onErrorResumeNext(Observable.just(itemToDelete))
+                }.subscribe()
     }
 
     fun data(): LiveData<ViewData> = liveData
 
     fun refresh() {
         items.clear()
+        Timber.d("refreshing...")
         compositeDisposable += repoLibRx.fetch(query = query)
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -74,6 +76,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     }
 
     fun addNew(text: String) {
+        Timber.d("creating...")
         compositeDisposable += repoLibRx.create(DemoDataEntity(-1, text))
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -94,5 +97,6 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
         super.onCleared()
     }
 
-    fun itemActionSubject(): PublishSubject<DemoDataEntity> = publishSubject
+    fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
+    fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
 }

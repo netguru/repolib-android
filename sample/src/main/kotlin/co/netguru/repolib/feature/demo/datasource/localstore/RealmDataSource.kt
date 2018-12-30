@@ -4,8 +4,8 @@ import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.data.SourceType
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
-import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -18,15 +18,17 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
 
     override fun fetch(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
-        realm.where(DataDao::class.java)
-                .findAll()
-                .asFlowable()
+
+        Single.fromCallable {
+            realm.where(DataDao::class.java)
+                    .findAll()
+        }
                 .filter { it.isLoaded }
                 .map { realm.copyFromRealm(it) }
-                .flatMap { Flowable.fromIterable(it) }
+                .toObservable()
+                .flatMap { Observable.fromIterable(it) }
                 .cast(DataDao::class.java)
                 .map(daoToEntityMapperDemo)
-                .toObservable()
     }
 
     override fun create(request: Request<DemoDataEntity>)
@@ -46,26 +48,25 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
 
     override fun delete(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
-        realm.where(DataDao::class.java)
-                .equalTo("id", request.entity?.id)
-                .findAll()
-                .asFlowable()
-                .doOnNext { item ->
-                    realm.executeTransaction {
-                        item.deleteAllFromRealm()
-                    }
-                }.toObservable()
-                .flatMap { Observable.fromIterable(it) }
-                .map(daoToEntityMapperDemo)
+        Single.fromCallable {
+            realm.where(DataDao::class.java)
+                    .equalTo("id", request.entity?.id)
+                    .findAll()
+        }.doOnSuccess { item ->
+            realm.executeTransaction {
+                item.deleteAllFromRealm()
+            }
+        }.ignoreElement()
+                .toObservable<DemoDataEntity>()
     }
 
     override fun update(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
-        Observable.fromIterable(
-                realm.where(DataDao::class.java)
-                        .equalTo("id", request.entity?.id)
-                        .findAll()
-        )
+        Single.fromCallable {
+            realm.where(DataDao::class.java)
+                    .equalTo("id", request.entity?.id)
+                    .findAll()
+        }.flatMapObservable { Observable.fromIterable(it) }
                 .filter { it.isLoaded }
                 .map { realm.copyFromRealm(it) }
                 .map { item ->

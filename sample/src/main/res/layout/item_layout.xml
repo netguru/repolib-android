@@ -37,6 +37,14 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/updateImageViewButton"
+        android:layout_width="@dimen/icon_size_default"
+        android:layout_height="@dimen/icon_size_default"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginRight="@dimen/icon_size_default"
+        android:src="@android:drawable/ic_menu_edit"/>
+
+    <ImageView
         android:id="@+id/removeImageViewButton"
         android:layout_width="@dimen/icon_size_default"
         android:layout_height="@dimen/icon_size_default"

@@ -8,14 +8,17 @@ import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_layout.view.*
 
-class DataAdapter(private val publishSubject: PublishSubject<DemoDataEntity>) : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
+class DataAdapter(
+        private val removeSubject: PublishSubject<DemoDataEntity>,
+        private val updateSubject: PublishSubject<DemoDataEntity>
+) : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
 
     var items = listOf<DemoDataEntity>()
 
     override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-    ): DataViewHolder = DataViewHolder(parent, R.layout.item_layout, publishSubject)
+    ): DataViewHolder = DataViewHolder(parent, R.layout.item_layout, removeSubject, updateSubject)
 
     override fun getItemCount(): Int = items.size
 
@@ -27,7 +30,8 @@ class DataAdapter(private val publishSubject: PublishSubject<DemoDataEntity>) : 
     class DataViewHolder(
             parent: ViewGroup,
             resId: Int,
-            private val publishSubject: PublishSubject<DemoDataEntity>
+            private val publishSubject: PublishSubject<DemoDataEntity>,
+            private val updateSubject: PublishSubject<DemoDataEntity>
     ) : RecyclerView.ViewHolder(
             LayoutInflater.from(parent.context).inflate(resId, parent, false)
     ) {
@@ -35,6 +39,7 @@ class DataAdapter(private val publishSubject: PublishSubject<DemoDataEntity>) : 
             itemTitleTextView.text = demoDataViewHolder.value
             sourceTextView.text = demoDataViewHolder.sourceType.name
             removeImageViewButton.setOnClickListener { publishSubject.onNext(demoDataViewHolder) }
+            updateImageViewButton.setOnClickListener { updateSubject.onNext(demoDataViewHolder) }
         }
     }
 }

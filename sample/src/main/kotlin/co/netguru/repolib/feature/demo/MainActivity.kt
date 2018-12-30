@@ -24,7 +24,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.main_activity)
         super.onCreate(savedInstanceState)
 
-        val adapter = DataAdapter(demoViewModel.itemActionSubject())
+        val adapter = DataAdapter(demoViewModel.removeSubject(), demoViewModel.updateSubject())
         recyclerView.adapter = adapter
         swipeToRefresh.setOnRefreshListener { demoViewModel.refresh() }
 
