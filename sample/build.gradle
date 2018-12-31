@@ -89,6 +89,8 @@ dependencies {
     // Support
     implementation libs.appCompat
     implementation libs.recyclerView
+    implementation libs.material
+    implementation libs.cardView
 
     //LifeCycle
     implementation libs.lifeCycleCommon
