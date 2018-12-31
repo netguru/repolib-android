@@ -19,7 +19,8 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
 
     private val compositeDisposable = CompositeDisposable()
     private val items = mutableListOf<DemoDataEntity>()
-    private val liveData = MutableLiveData<ViewData>()
+    private val viewLiveData = MutableLiveData<ViewData>()
+    private val editDataLiveData = MutableLiveData<DemoDataEntity>()
     private val query = object : Query<DemoDataEntity>() {}
     private val removeSubject = PublishSubject.create<DemoDataEntity>()
     private val updateSubject = PublishSubject.create<DemoDataEntity>()
@@ -32,30 +33,37 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                         onNext = {
                             Timber.d("item added")
                             items.add(it)
-                            liveData.postValue(ViewData(items = items))
+                            viewLiveData.postValue(ViewData(items = items))
                         },
                         onError = {
                             Timber.e(it)
-                            liveData.postValue(ViewData(error = it.message, items = items))
+                            viewLiveData.postValue(ViewData(error = it.message, items = items))
                         }
                 )
 
-        removeSubject.doOnNext { Timber.d("removing... $it") }
+        compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
                 .flatMap { itemToDelete ->
                     repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
                             .doOnComplete {
                                 Timber.d("removed")
-                                liveData.postValue(ViewData(items = items))
+                                viewLiveData.postValue(ViewData(items = items))
                             }
                             .doOnError {
                                 Timber.e(it)
-                                liveData.postValue(ViewData(it.message, items))
+                                viewLiveData.postValue(ViewData(it.message, items))
                             }.andThen(Observable.just(itemToDelete))
                             .onErrorResumeNext(Observable.just(itemToDelete))
                 }.subscribe()
+
+        compositeDisposable += updateSubject
+                .doOnNext { itemToEdit -> editDataLiveData.postValue(itemToEdit) }
+                .onErrorResumeNext(Observable.empty())
+                .subscribe()
     }
 
-    fun data(): LiveData<ViewData> = liveData
+    fun data(): LiveData<ViewData> = viewLiveData
+
+    fun dataToEdit(): LiveData<DemoDataEntity> = editDataLiveData
 
     fun refresh() {
         items.clear()
@@ -66,11 +74,11 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                 .subscribeBy(
                         onComplete = {
                             Timber.d("refreshed")
-                            liveData.postValue(ViewData(items = items))
+                            viewLiveData.postValue(ViewData(items = items))
                         },
                         onError = {
                             Timber.e(it)
-                            liveData.postValue(ViewData(it.message, items))
+                            viewLiveData.postValue(ViewData(it.message, items))
                         }
                 )
     }
@@ -83,11 +91,11 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                 .subscribeBy(
                         onComplete = {
                             Timber.d("created")
-                            liveData.postValue(ViewData(items = items))
+                            viewLiveData.postValue(ViewData(items = items))
                         },
                         onError = {
                             Timber.e(it)
-                            liveData.postValue(ViewData(it.message, items))
+                            viewLiveData.postValue(ViewData(it.message, items))
                         }
                 )
     }

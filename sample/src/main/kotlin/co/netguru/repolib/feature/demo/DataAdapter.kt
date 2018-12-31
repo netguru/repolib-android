@@ -39,7 +39,7 @@ class DataAdapter(
             itemTitleTextView.text = demoDataViewHolder.value
             sourceTextView.text = demoDataViewHolder.sourceType.name
             removeImageViewButton.setOnClickListener { publishSubject.onNext(demoDataViewHolder) }
-            updateImageViewButton.setOnClickListener { updateSubject.onNext(demoDataViewHolder) }
+            itemContainer.setOnClickListener { updateSubject.onNext(demoDataViewHolder) }
         }
     }
 }

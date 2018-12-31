@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
-
+        android:id="@+id/itemContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#33000000"
         android:orientation="vertical"
+        android:foreground="?selectableItemBackground"
         android:padding="@dimen/padding_default">
 
         <TextView
@@ -35,14 +36,6 @@
             tools:text="unknown"/>
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/updateImageViewButton"
-        android:layout_width="@dimen/icon_size_default"
-        android:layout_height="@dimen/icon_size_default"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginRight="@dimen/icon_size_default"
-        android:src="@android:drawable/ic_menu_edit"/>
 
     <ImageView
         android:id="@+id/removeImageViewButton"

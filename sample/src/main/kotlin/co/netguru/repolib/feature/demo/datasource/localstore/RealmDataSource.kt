@@ -9,7 +9,6 @@ import io.reactivex.Single
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-//todo logic for all methods
 class RealmDataSource(private val realmConfiguration: RealmConfiguration) : DataSource<DemoDataEntity> {
 
     private val daoToEntityMapperDemo: (DataDao) -> DemoDataEntity = {
@@ -18,7 +17,6 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
 
     override fun fetch(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
-
         Single.fromCallable {
             realm.where(DataDao::class.java)
                     .findAll()
@@ -55,8 +53,7 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
             realm.executeTransaction {
                 item.deleteAllFromRealm()
             }
-        }.ignoreElement()
-                .toObservable<DemoDataEntity>()
+        }.ignoreElement().toObservable<DemoDataEntity>()
     }
 
     override fun update(request: Request<DemoDataEntity>)

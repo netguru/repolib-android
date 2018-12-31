@@ -8,6 +8,7 @@ import co.netguru.repolib.feature.demo.di.ViewModelFactory
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.main_activity.*
 import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -35,6 +36,11 @@ class MainActivity : DaggerAppCompatActivity() {
                 viewData.error?.let { longToast(it) }
                 notifyDataSetChanged()
             }
+        })
+
+        demoViewModel.dataToEdit().observe(this, Observer {
+            //            todo open data editor
+            toast("edit: ${it.value}")
         })
 
         addButton.setOnClickListener {
