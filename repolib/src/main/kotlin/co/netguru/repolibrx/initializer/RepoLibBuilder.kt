@@ -13,7 +13,8 @@ class RepoLibBuilder<T> {
 
     var remoteDataSourceController: DataSource<T> by Delegates.notNull()
 
-    private var requestsStrategy: RequestsStrategy = DefaultRequestsStrategy()
+    //    todo rename to factory
+    var requestsStrategy: RequestsStrategy = DefaultRequestsStrategy()
 
     fun build(): RepoLibRx<T> {
         return RepoLib(
