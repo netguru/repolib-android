@@ -4,26 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.repolib.R
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.di.UpdateViewModelFactory
+import dagger.android.support.DaggerAppCompatDialogFragment
 import kotlinx.android.synthetic.main.item_editor_layout.*
 import javax.inject.Inject
 
-class ItemUpdateDialogFragment : DialogFragment() {
+class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
 
     companion object {
         const val ARG_ITEM = "arg:item"
 
         @JvmStatic
-        fun newInstance(item: DemoDataEntity) {
-            val fragment = ItemUpdateDialogFragment()
-            val arguments = Bundle()
-            arguments.putParcelable(ARG_ITEM, item)
-            fragment.arguments =
-        }
+        fun newInstance(item: DemoDataEntity) = ItemUpdateDialogFragment()
+                .apply { arguments = Bundle().apply { putParcelable(ARG_ITEM, item) } }
     }
 
     @Inject

@@ -4,20 +4,19 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.repolib.R
-import co.netguru.repolib.feature.demo.di.ViewModelFactory
+import co.netguru.repolib.feature.demo.di.DemoViewModelFactory
+import co.netguru.repolib.feature.edit.ItemUpdateDialogFragment
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.main_activity.*
 import org.jetbrains.anko.longToast
-import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
-    internal lateinit var factory: ViewModelFactory
-
+    internal lateinit var factoryDemo: DemoViewModelFactory
     private val demoViewModel: DemoViewModel by lazy {
-        ViewModelProviders.of(this, factory)[DemoViewModel::class.java]
+        ViewModelProviders.of(this, factoryDemo)[DemoViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,13 +38,14 @@ class MainActivity : DaggerAppCompatActivity() {
         })
 
         demoViewModel.dataToEdit().observe(this, Observer {
-            //            todo open data editor
-            toast("edit: ${it.value}")
+            ItemUpdateDialogFragment.newInstance(it).show(supportFragmentManager, null)
         })
 
         addButton.setOnClickListener {
             demoViewModel.addNew(addNewEditText.text.toString())
         }
+
+        demoViewModel.refresh()
     }
 }
 
