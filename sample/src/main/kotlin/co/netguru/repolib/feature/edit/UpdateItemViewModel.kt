@@ -11,8 +11,8 @@ class UpdateItemViewModel @Inject constructor(private val repoLibRx: RepoLibRx<D
 
     private val compositeDisposable = CompositeDisposable()
 
-    fun update(itemToUpdate: DemoDataEntity, onCompleteAction: () -> Unit) {
-        compositeDisposable += repoLibRx.update(itemToUpdate).subscribe(onCompleteAction)
+    fun update(itemToUpdate: DemoDataEntity, onCompleteAction: () -> Unit, onError: (Throwable) -> Unit) {
+        compositeDisposable += repoLibRx.update(itemToUpdate).subscribe(onCompleteAction, onError)
     }
 
     override fun onCleared() {

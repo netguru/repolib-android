@@ -10,6 +10,7 @@ import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.di.UpdateViewModelFactory
 import dagger.android.support.DaggerAppCompatDialogFragment
 import kotlinx.android.synthetic.main.item_editor_layout.*
+import org.jetbrains.anko.longToast
 import javax.inject.Inject
 
 class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
@@ -38,7 +39,10 @@ class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         saveButton.setOnClickListener {
-            updateItemViewModel.update(arguments?.get(ARG_ITEM) as DemoDataEntity) { dismiss() }
+            val item = arguments?.get(ARG_ITEM) as DemoDataEntity
+            updateItemViewModel.update(item.copy(value = itemEditTextInputLayout.text.toString()),
+                    { dismiss() },
+                    { th -> context?.longToast("error: ${th.message}") })
         }
     }
 }

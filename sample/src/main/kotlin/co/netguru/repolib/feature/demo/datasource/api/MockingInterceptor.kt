@@ -65,7 +65,7 @@ class MockingInterceptor(
                     requestedElement
             )
         }
-        return request.body().toString()
+        return gson.toJson(requestedElement)
     }
 
     private fun createElement(request: Request): String {
