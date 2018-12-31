@@ -108,12 +108,3 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
     fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
 }
-
-fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity) {
-    val index = this.indexOfFirst { it.id == item.id }
-    if (index == -1) {
-        this.add(item)
-    } else {
-        set(index, item)
-    }
-}

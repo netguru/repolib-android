@@ -44,3 +44,13 @@ class DataAdapter(
     }
 }
 
+
+fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity) {
+    val index = this.indexOfFirst { it.id == item.id }
+    if (index == -1) {
+        this.add(item)
+    } else {
+        set(index, item)
+    }
+}
+
