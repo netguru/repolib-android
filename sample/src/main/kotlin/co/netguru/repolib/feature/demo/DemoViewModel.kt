@@ -32,7 +32,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                 .subscribeBy(
                         onNext = {
                             Timber.d("item added")
-                            items.add(it)
+                            items.addOrUpdate(it)
                             viewLiveData.postValue(ViewData(items = items))
                         },
                         onError = {
@@ -107,4 +107,13 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
 
     fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
     fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
+}
+
+fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity) {
+    val index = this.indexOfFirst { it.id == item.id }
+    if (index == -1) {
+        this.add(item)
+    } else {
+        set(index, item)
+    }
 }
