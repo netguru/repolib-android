@@ -7,6 +7,7 @@ import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.data.ViewData
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -24,8 +25,65 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     private val query = object : Query<DemoDataEntity>() {}
     private val removeSubject = PublishSubject.create<DemoDataEntity>()
     private val updateSubject = PublishSubject.create<DemoDataEntity>()
+    private val onComplete: () -> Unit = {
+        Timber.d("created")
+        viewLiveData.postValue(ViewData(items = items))
+    }
+    private val onError: (Throwable) -> Unit = {
+        Timber.e(it)
+        viewLiveData.postValue(ViewData(it.message, items))
+    }
 
     init {
+        setupDataOutput()
+        setupRemovingAction()
+        setupUpdatingAction()
+
+    }
+
+    override fun onCleared() {
+        compositeDisposable.clear()
+        super.onCleared()
+    }
+
+    fun data(): LiveData<ViewData> = viewLiveData
+    fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
+    fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
+
+    fun dataToEdit(): LiveData<DemoDataEntity> = editDataLiveData
+
+    fun refresh() {
+        items.clear()
+        handleRequest(repoLibRx.fetch(query = query))
+    }
+
+    fun addNew(text: String) {
+        Timber.d("creating...")
+        handleRequest(repoLibRx.create(DemoDataEntity(-1, text)))
+    }
+
+    private fun handleRequest(requestCompletable: Completable) {
+        requestCompletable
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onComplete = onComplete, onError = onError)
+
+    }
+
+    private fun setupRemovingAction() {
+        compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
+                .flatMap { itemToDelete ->
+                    repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
+                            .andThen(Observable.fromCallable {
+                                items.indexOf(itemToDelete)
+                            })
+                            .doOnNext { viewLiveData.postValue(ViewData(items = items, indexToRemove = it)) }
+                            .doOnError(onError)
+                            .onErrorResumeNext(Observable.empty())
+                }.subscribe()
+    }
+
+    private fun setupDataOutput() {
         compositeDisposable += repoLibRx.outputDataStream()
 //                .subscribeOn(Schedulers.io())
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -35,76 +93,14 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                             items.addOrUpdate(it)
                             viewLiveData.postValue(ViewData(items = items))
                         },
-                        onError = {
-                            Timber.e(it)
-                            viewLiveData.postValue(ViewData(error = it.message, items = items))
-                        }
+                        onError = onError
                 )
+    }
 
-        compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
-                .flatMap { itemToDelete ->
-                    repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
-                            .doOnComplete {
-                                Timber.d("removed")
-                                viewLiveData.postValue(ViewData(items = items))
-                            }
-                            .doOnError {
-                                Timber.e(it)
-                                viewLiveData.postValue(ViewData(it.message, items))
-                            }.andThen(Observable.just(itemToDelete))
-                            .onErrorResumeNext(Observable.just(itemToDelete))
-                }.subscribe()
-
+    private fun setupUpdatingAction() {
         compositeDisposable += updateSubject
                 .doOnNext { itemToEdit -> editDataLiveData.postValue(itemToEdit) }
                 .onErrorResumeNext(Observable.empty())
                 .subscribe()
     }
-
-    fun data(): LiveData<ViewData> = viewLiveData
-
-    fun dataToEdit(): LiveData<DemoDataEntity> = editDataLiveData
-
-    fun refresh() {
-        items.clear()
-        Timber.d("refreshing...")
-        compositeDisposable += repoLibRx.fetch(query = query)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onComplete = {
-                            Timber.d("refreshed")
-                            viewLiveData.postValue(ViewData(items = items))
-                        },
-                        onError = {
-                            Timber.e(it)
-                            viewLiveData.postValue(ViewData(it.message, items))
-                        }
-                )
-    }
-
-    fun addNew(text: String) {
-        Timber.d("creating...")
-        compositeDisposable += repoLibRx.create(DemoDataEntity(-1, text))
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onComplete = {
-                            Timber.d("created")
-                            viewLiveData.postValue(ViewData(items = items))
-                        },
-                        onError = {
-                            Timber.e(it)
-                            viewLiveData.postValue(ViewData(it.message, items))
-                        }
-                )
-    }
-
-    override fun onCleared() {
-        compositeDisposable.clear()
-        super.onCleared()
-    }
-
-    fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
-    fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
 }

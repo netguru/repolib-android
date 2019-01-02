@@ -13,7 +13,7 @@ class DataAdapter(
         private val updateSubject: PublishSubject<DemoDataEntity>
 ) : RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
 
-    var items = listOf<DemoDataEntity>()
+    var items = mutableListOf<DemoDataEntity>()
 
     override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -26,6 +26,11 @@ class DataAdapter(
             holder: DataViewHolder,
             position: Int
     ) = holder.bind(items[position])
+
+    fun remove(indexToRemove: Int) {
+        items.removeAt(indexToRemove)
+        notifyItemRemoved(indexToRemove)
+    }
 
     class DataViewHolder(
             parent: ViewGroup,

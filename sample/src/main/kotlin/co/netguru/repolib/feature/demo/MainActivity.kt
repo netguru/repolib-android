@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.repolib.R
+import co.netguru.repolib.feature.demo.data.UNDEFINED
 import co.netguru.repolib.feature.demo.di.DemoViewModelFactory
 import co.netguru.repolib.feature.edit.ItemUpdateDialogFragment
 import dagger.android.support.DaggerAppCompatActivity
@@ -31,8 +32,9 @@ class MainActivity : DaggerAppCompatActivity() {
         demoViewModel.data().observe(this, Observer { viewData ->
             swipeToRefresh.isRefreshing = false
             adapter.apply {
-                this.items = viewData.items.reversed()
+                this.items = viewData.items.reversed().toMutableList()
                 viewData.error?.let { longToast(it) }
+                if (viewData.indexToRemove != UNDEFINED.toInt()) adapter.remove(viewData.indexToRemove)
                 notifyDataSetChanged()
             }
         })
