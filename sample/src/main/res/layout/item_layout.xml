@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_margin="@dimen/margin_small"
     android:layout_height="wrap_content">
+
     <LinearLayout
         android:id="@+id/itemContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#33000000"
-        android:orientation="vertical"
         android:foreground="?selectableItemBackground"
+        android:orientation="vertical"
         android:padding="@dimen/padding_default">
 
         <TextView
@@ -43,4 +44,4 @@
         android:layout_height="@dimen/icon_size_default"
         android:layout_gravity="center_vertical|end"
         android:src="@android:drawable/ic_menu_close_clear_cancel"/>
-</FrameLayout>
+</androidx.cardview.widget.CardView>

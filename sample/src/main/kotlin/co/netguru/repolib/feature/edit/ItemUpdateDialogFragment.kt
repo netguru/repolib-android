@@ -38,8 +38,9 @@ class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val item = arguments?.get(ARG_ITEM) as DemoDataEntity
+        itemEditTextInputLayout.setText(item.value)
         saveButton.setOnClickListener {
-            val item = arguments?.get(ARG_ITEM) as DemoDataEntity
             updateItemViewModel.update(item.copy(value = itemEditTextInputLayout.text.toString()),
                     { dismiss() },
                     { th -> context?.longToast("error: ${th.message}") })
