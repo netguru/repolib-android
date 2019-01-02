@@ -1,6 +1,5 @@
 package co.netguru.repolibrx.strategy
 
-import android.util.Log
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.data.RequestType
 import co.netguru.repolibrx.datasource.DataSource
@@ -47,7 +46,6 @@ sealed class RequestStrategy : Strategy {
                 dataSourceAction: (DataSource<T>) -> Observable<T>
         ): Observable<T> = remoteDataSource.applyAdditionalAction(dataSourceAction)
                 .flatMap {
-                    Log.d(this.javaClass.toString(), "test item: $it")
                     localDataSource.update(Request(
                             type = RequestType.UPDATE,
                             entity = it
