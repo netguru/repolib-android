@@ -4,12 +4,12 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import co.netguru.repolib.R
-import co.netguru.repolib.feature.demo.data.UNDEFINED
 import co.netguru.repolib.feature.demo.di.DemoViewModelFactory
 import co.netguru.repolib.feature.edit.ItemUpdateDialogFragment
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.main_activity.*
 import org.jetbrains.anko.longToast
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -27,25 +27,39 @@ class MainActivity : DaggerAppCompatActivity() {
 
         val adapter = DataAdapter(demoViewModel.removeSubject(), demoViewModel.updateSubject())
         recyclerView.adapter = adapter
-        swipeToRefresh.setOnRefreshListener { demoViewModel.refresh() }
+        swipeToRefresh.setOnRefreshListener {
+            adapter.items.clear()
+            demoViewModel.refresh()
+        }
 
-        demoViewModel.data().observe(this, Observer { viewData ->
+        demoViewModel.getData { viewData ->
             swipeToRefresh.isRefreshing = false
-            adapter.apply {
-                this.items = viewData.items.reversed().toMutableList()
-                viewData.error?.let { longToast(it) }
-                if (viewData.indexToRemove != UNDEFINED.toInt()) adapter.remove(viewData.indexToRemove)
-                notifyDataSetChanged()
-            }
+            Timber.d("added: $viewData")
+            adapter.add(viewData)
+        }
+
+        demoViewModel.updatedItemLiveData.observe(this, Observer {
+            swipeToRefresh.isRefreshing = false
+            adapter.update(it)
         })
 
-        demoViewModel.dataToEdit().observe(this, Observer {
+        demoViewModel.editDataLiveData.observe(this, Observer {
             ItemUpdateDialogFragment.newInstance(it).show(supportFragmentManager, null)
+        })
+
+        demoViewModel.removedItemLiveData.observe(this, Observer {
+            adapter.remove(it)
         })
 
         addButton.setOnClickListener {
             demoViewModel.addNew(addNewEditText.text.toString())
         }
+
+        demoViewModel.stateLiveData.observe(this, Observer {
+            swipeToRefresh.isRefreshing = false
+            it.error?.let { message -> longToast(message) }
+            adapter.notifyDataSetChanged()
+        })
 
         demoViewModel.refresh()
     }

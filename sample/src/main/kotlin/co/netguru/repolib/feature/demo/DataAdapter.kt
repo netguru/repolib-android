@@ -27,10 +27,20 @@ class DataAdapter(
             position: Int
     ) = holder.bind(items[position])
 
-    fun remove(indexToRemove: Int) {
-        items.removeAt(indexToRemove)
-        notifyItemRemoved(indexToRemove)
+    fun remove(item: DemoDataEntity) {
+        val index = this.items.indexOfFirst { it.id == item.id }
+        if (index == -1) {
+            items.removeAt(index)
+            notifyItemRemoved(index)
+        }
     }
+
+    fun update(item: DemoDataEntity) {
+        val newIndex = items.addOrUpdate(item)
+        notifyItemChanged(newIndex)
+    }
+
+    fun add(item: DemoDataEntity) = items.addOrUpdate(item)
 
     class DataViewHolder(
             parent: ViewGroup,
@@ -49,12 +59,12 @@ class DataAdapter(
     }
 }
 
-fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity) {
+fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity): Int {
     val index = this.indexOfFirst { it.id == item.id }
     if (index == -1) {
-        this.add(item)
+        this.add(0, item)
     } else {
         set(index, item)
     }
+    return index
 }
-
