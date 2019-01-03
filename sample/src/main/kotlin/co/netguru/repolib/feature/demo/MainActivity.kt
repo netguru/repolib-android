@@ -35,19 +35,23 @@ class MainActivity : DaggerAppCompatActivity() {
         demoViewModel.getData { viewData ->
             swipeToRefresh.isRefreshing = false
             Timber.d("added: $viewData")
+            Timber.d("DATA LIVE DATA")
             adapter.add(viewData)
         }
 
         demoViewModel.updatedItemLiveData.observe(this, Observer {
+            Timber.d("UPDATE LIVE DATA")
             swipeToRefresh.isRefreshing = false
             adapter.update(it)
         })
 
         demoViewModel.editDataLiveData.observe(this, Observer {
+            Timber.d("EDIT LIVE DATA")
             ItemUpdateDialogFragment.newInstance(it).show(supportFragmentManager, null)
         })
 
         demoViewModel.removedItemLiveData.observe(this, Observer {
+            Timber.d("REMOVE LIVE DATA")
             adapter.remove(it)
         })
 
@@ -56,6 +60,7 @@ class MainActivity : DaggerAppCompatActivity() {
         }
 
         demoViewModel.stateLiveData.observe(this, Observer {
+            Timber.d("STATE LIVE DATA")
             swipeToRefresh.isRefreshing = false
             it.error?.let { message -> longToast(message) }
             adapter.notifyDataSetChanged()

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import co.netguru.repolib.R
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
+import co.netguru.repolib.feature.demo.data.UNDEFINED
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_layout.view.*
 
@@ -27,11 +28,14 @@ class DataAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    fun add(item: DemoDataEntity) = items.addOrUpdate(item)
+    fun add(item: DemoDataEntity) {
+        items.addOrUpdate(item)
+        notifyDataSetChanged()
+    }
 
     fun remove(item: DemoDataEntity) {
-        val index = this.items.indexOfFirst { it.id == item.id }
-        if (index == -1) {
+        val index = items.indexOfFirst { it.id == item.id }
+        if (index != UNDEFINED.toInt()) {
             items.removeAt(index)
             notifyItemRemoved(index)
         }
@@ -60,9 +64,9 @@ class DataAdapter(
 }
 
 fun MutableList<DemoDataEntity>.addOrUpdate(item: DemoDataEntity): Int {
-    val index = this.indexOfFirst { it.id == item.id }
-    if (index == -1) {
-        this.add(0, item)
+    val index = indexOfFirst { it.id == item.id }
+    if (index == UNDEFINED.toInt()) {
+        add(0, item)
     } else {
         set(index, item)
     }
