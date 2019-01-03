@@ -3,6 +3,7 @@ package co.netguru.repolib.feature.demo.di
 import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.datasource.api.API
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
@@ -25,15 +26,15 @@ class RepositoryModule {
     //NETWORK DEPENDENCIES SETUP (OkHttp | GSON | RETROFIT)
     @AppScope
     @Provides
-    fun provideOKHttp() = OkHttpClient.Builder().build()
+    fun provideOKHttp(): OkHttpClient = OkHttpClient.Builder().build()
 
     @AppScope
     @Provides
-    fun provideGson() = GsonBuilder().create()
+    fun provideGson(): Gson = GsonBuilder().create()
 
     @AppScope
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson) = Retrofit.Builder()
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             //todo
@@ -43,7 +44,7 @@ class RepositoryModule {
 
     @AppScope
     @Provides
-    fun provideApi(retrofit: Retrofit) = retrofit.create(API::class.java)
+    fun provideApi(retrofit: Retrofit): API = retrofit.create(API::class.java)
 
     //LOCAL STORAGE DEPENDENCIES SETUP (REALM)
     @AppScope
@@ -60,20 +61,20 @@ class RepositoryModule {
     @Provides
     @LocalDataSourceQualifier
     fun provideLocalDataSource(realmConfiguration: RealmConfiguration)
-            : DataSource<DataEntity> = RealmDataSource(realmConfiguration)
+            : DataSource<DemoDataEntity> = RealmDataSource(realmConfiguration)
 
     @AppScope
     @Provides
     @RemoteDataSourceQualifier
     fun provideRemoteDataSource(api: API)
-            : DataSource<DataEntity> = RetrofitDataSource(api)
+            : DataSource<DemoDataEntity> = RetrofitDataSource(api)
 
     @AppScope
     @Provides
     fun provideRepoLibRx(
-            @LocalDataSourceQualifier localDataSource: DataSource<DataEntity>,
-            @RemoteDataSourceQualifier remoteDataSource: DataSource<DataEntity>
-    ): RepoLibRx<DataEntity> = createRepo {
+            @LocalDataSourceQualifier localDataSource: DataSource<DemoDataEntity>,
+            @RemoteDataSourceQualifier remoteDataSource: DataSource<DemoDataEntity>
+    ): RepoLibRx<DemoDataEntity> = createRepo {
         localDataSourceController = localDataSource
         remoteDataSourceController = remoteDataSource
     }
