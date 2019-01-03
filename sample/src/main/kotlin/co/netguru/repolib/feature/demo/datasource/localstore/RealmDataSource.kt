@@ -46,9 +46,12 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
     override fun delete(request: Request<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Single.fromCallable {
-            realm.where(DataDao::class.java)
-                    .equalTo("id", request.query?.item?.id)
-                    .findAll()
+            val query = realm.where(DataDao::class.java)
+            if (request.query?.item != null) {
+//                todo reimplement query all
+                query.equalTo("id", request.query?.item?.id)
+            }
+            query.findAll()
         }.doOnSuccess { item ->
             realm.executeTransaction {
                 item.deleteAllFromRealm()
@@ -57,19 +60,16 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
     }
 
     override fun update(request: Request<DemoDataEntity>)
-            : Observable<DemoDataEntity> = create(request).doOnSubscribe {
-        executeLambdaForRealm { realm ->
-            Single.fromCallable {
-                realm.where(DataDao::class.java)
-                        .findAll()
-            }.doOnSuccess { item ->
-                realm.executeTransaction {
-                    item.deleteAllFromRealm()
-                }
-            }.ignoreElement().toObservable<DemoDataEntity>()
-        }
-    }
+            : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
+        Single.fromCallable {
+            val item = realm.where(DataDao::class.java)
+                    .equalTo("id", request.query?.item?.id)
+                    .findFirst()
+            realm.executeTransaction { item?.value = request.query?.item?.value }
+            item
+        }.toObservable().map(daoToEntityMapperDemo)
 
+    }
 
     //  todo to use it after refactor
     private fun executeLambdaForRealm(realmAction: (Realm) -> Observable<DemoDataEntity>)

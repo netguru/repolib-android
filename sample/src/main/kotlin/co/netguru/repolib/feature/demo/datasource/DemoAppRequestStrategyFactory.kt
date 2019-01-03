@@ -11,7 +11,7 @@ class DemoAppRequestStrategyFactory : RequestsStrategy {
     override fun <T> select(request: Request<T>): Strategy = when (request.type) {
         RequestType.CREATE -> RequestStrategy.OnlyRemote
         RequestType.UPDATE -> RequestStrategy.OnlyRemote
-        RequestType.DELETE -> RequestStrategy.Both
+        RequestType.DELETE -> RequestStrategy.OnlyRemote
         RequestType.FETCH -> RequestStrategy.LocalAfterUpdateOrFailureOfRemote
     }
 }

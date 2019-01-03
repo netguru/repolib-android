@@ -8,6 +8,7 @@ import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -74,7 +75,8 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
                             .doOnError(onError)
                             .onErrorComplete()
                             .andThen(Observable.just(itemToDelete))
-                }.subscribe()
+                }.observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
     }
 
     private fun setupUpdatingAction() {

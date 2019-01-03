@@ -20,12 +20,14 @@ class DataAdapter(
             viewType: Int
     ): DataViewHolder = DataViewHolder(parent, R.layout.item_layout, removeSubject, updateSubject)
 
-    override fun getItemCount(): Int = items.size
-
     override fun onBindViewHolder(
             holder: DataViewHolder,
             position: Int
     ) = holder.bind(items[position])
+
+    override fun getItemCount(): Int = items.size
+
+    fun add(item: DemoDataEntity) = items.addOrUpdate(item)
 
     fun remove(item: DemoDataEntity) {
         val index = this.items.indexOfFirst { it.id == item.id }
@@ -39,8 +41,6 @@ class DataAdapter(
         val newIndex = items.addOrUpdate(item)
         notifyItemChanged(newIndex)
     }
-
-    fun add(item: DemoDataEntity) = items.addOrUpdate(item)
 
     class DataViewHolder(
             parent: ViewGroup,
