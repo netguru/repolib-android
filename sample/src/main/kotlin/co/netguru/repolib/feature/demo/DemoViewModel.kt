@@ -12,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,7 +39,6 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     init {
         setupRemovingAction()
         setupUpdatingAction()
-
     }
 
     override fun onCleared() {
@@ -49,29 +49,22 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
     fun removeSubject(): PublishSubject<DemoDataEntity> = removeSubject
     fun updateSubject(): PublishSubject<DemoDataEntity> = updateSubject
     fun refresh() = handleRequest(repoLibRx.fetch(query = query))
-
-    fun addNew(text: String) {
-        Timber.d("creating...")
-        handleRequest(repoLibRx.create(DemoDataEntity(-1, text)))
-    }
+    fun addNew(text: String) = handleRequest(repoLibRx.create(DemoDataEntity(-1, text)))
 
     private fun handleRequest(requestCompletable: Completable) {
         requestCompletable
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onComplete = onComplete, onError = onError)
-
     }
 
     private fun setupRemovingAction() {
         compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
                 .flatMap { itemToDelete ->
                     repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
-
-                            .doOnComplete {
-                                Timber.d("removed...")
-                                removedItemLiveData.postValue(itemToDelete)
-                            }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnComplete { removedItemLiveData.postValue(itemToDelete) }
                             .doOnError(onError)
                             .onErrorComplete()
                             .andThen(Observable.just(itemToDelete))
@@ -81,6 +74,8 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
 
     private fun setupUpdatingAction() {
         compositeDisposable += updateSubject
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { itemToEdit -> editDataLiveData.postValue(itemToEdit) }
                 .onErrorResumeNext(Observable.empty())
                 .subscribe()
@@ -88,8 +83,7 @@ class DemoViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDat
 
     fun getData(onItemReceived: (DemoDataEntity) -> Unit) {
         compositeDisposable += repoLibRx.outputDataStream()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onNext = onItemReceived, onError = onError)
     }
 }

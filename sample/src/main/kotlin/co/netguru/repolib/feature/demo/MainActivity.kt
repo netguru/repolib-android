@@ -28,7 +28,6 @@ class MainActivity : DaggerAppCompatActivity() {
         val adapter = DataAdapter(demoViewModel.removeSubject(), demoViewModel.updateSubject())
         recyclerView.adapter = adapter
         swipeToRefresh.setOnRefreshListener {
-            adapter.items.clear()
             demoViewModel.refresh()
         }
 
