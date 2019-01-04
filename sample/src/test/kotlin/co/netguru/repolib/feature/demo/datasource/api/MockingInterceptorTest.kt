@@ -1,5 +1,7 @@
 package co.netguru.repolib.feature.demo.datasource.api
 
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.doReturn
@@ -22,12 +24,18 @@ class MockingInterceptorTest {
     }
 
     private val gson = Gson()
-    private val mockingInterceptor = MockingInterceptor(gson)
     private val chainMock: Interceptor.Chain = mock()
+    private val networkInfoMock: NetworkInfo = mock {
+        on { isConnected } doReturn (true)
+    }
+    private val connectivityManager: ConnectivityManager = mock {
+        on { activeNetworkInfo } doReturn (networkInfoMock)
+    }
+    private val mockingInterceptor = MockingInterceptor(gson, connectivityManager)
 
     @Test
     fun whenGetAllRequestSent_thenReturnListOfPredefinedElements() {
-        //given
+        //givengit
         val getAllRequest = Request.Builder()
                 .url("http://example.com/getAll")
                 .build()

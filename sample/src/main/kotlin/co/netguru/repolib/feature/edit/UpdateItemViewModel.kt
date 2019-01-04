@@ -7,11 +7,17 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
-class UpdateItemViewModel @Inject constructor(private val repoLibRx: RepoLibRx<DemoDataEntity>) : ViewModel() {
+class UpdateItemViewModel @Inject constructor(
+        private val repoLibRx: RepoLibRx<DemoDataEntity>
+) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    fun update(itemToUpdate: DemoDataEntity, onCompleteAction: () -> Unit, onError: (Throwable) -> Unit) {
+    fun update(
+            itemToUpdate: DemoDataEntity,
+            onCompleteAction: () -> Unit,
+            onError: (Throwable) -> Unit
+    ) {
         compositeDisposable += repoLibRx.update(itemToUpdate).subscribe(onCompleteAction, onError)
     }
 

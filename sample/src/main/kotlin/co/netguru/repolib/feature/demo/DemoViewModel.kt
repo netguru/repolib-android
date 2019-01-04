@@ -48,22 +48,16 @@ class DemoViewModel @Inject constructor(
                 .subscribeBy(onNext = onItemReceived, onError = onError)
     }
 
-    fun subscribeListActions(
-            updateSubject: PublishSubject<DemoDataEntity>,
-            removeSubject: PublishSubject<DemoDataEntity>
-    ) {
-        setupUpdatingAction(updateSubject)
-        setupRemovingAction(removeSubject)
-    }
-
-    private fun handleRequest(requestCompletable: Completable) {
-        requestCompletable
+    fun setupUpdatingAction(updateSubject: PublishSubject<DemoDataEntity>) {
+        compositeDisposable += updateSubject
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(onComplete = onComplete, onError = onError)
+                .doOnNext { itemToEdit -> editDataLiveData.postValue(itemToEdit) }
+                .onErrorResumeNext(Observable.empty())
+                .subscribe()
     }
 
-    private fun setupRemovingAction(removeSubject: PublishSubject<DemoDataEntity>) {
+    fun setupRemovingAction(removeSubject: PublishSubject<DemoDataEntity>) {
         compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
                 .flatMap { itemToDelete ->
                     repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
@@ -77,12 +71,10 @@ class DemoViewModel @Inject constructor(
                 .subscribe()
     }
 
-    private fun setupUpdatingAction(updateSubject: PublishSubject<DemoDataEntity>) {
-        compositeDisposable += updateSubject
+    private fun handleRequest(requestCompletable: Completable) {
+        requestCompletable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { itemToEdit -> editDataLiveData.postValue(itemToEdit) }
-                .onErrorResumeNext(Observable.empty())
-                .subscribe()
+                .subscribeBy(onComplete = onComplete, onError = onError)
     }
 }

@@ -14,15 +14,6 @@ import org.jetbrains.anko.longToast
 import javax.inject.Inject
 
 class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
-
-    companion object {
-        const val ARG_ITEM = "arg:item"
-
-        @JvmStatic
-        fun newInstance(item: DemoDataEntity) = ItemUpdateDialogFragment()
-                .apply { arguments = Bundle().apply { putParcelable(ARG_ITEM, item) } }
-    }
-
     @Inject
     internal lateinit var factory: UpdateViewModelFactory
     private val updateItemViewModel: UpdateItemViewModel by lazy {
@@ -45,5 +36,13 @@ class ItemUpdateDialogFragment : DaggerAppCompatDialogFragment() {
                     { dismiss() },
                     { th -> context?.longToast("error: ${th.message}") })
         }
+    }
+
+    companion object {
+        const val ARG_ITEM = "arg:item"
+
+        @JvmStatic
+        fun newInstance(item: DemoDataEntity) = ItemUpdateDialogFragment()
+                .apply { arguments = Bundle().apply { putParcelable(ARG_ITEM, item) } }
     }
 }

@@ -40,7 +40,7 @@ sealed class RequestStrategy : Strategy {
         ).flatMap(dataSourceAction)
     }
 
-    object LocalAfterUpdateWithRemote : RequestStrategy() {
+    object LocalAfterFullUpdateWithRemote : RequestStrategy() {
         override fun <T> apply(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>,
@@ -67,12 +67,12 @@ sealed class RequestStrategy : Strategy {
                 .onErrorResumeNext(localDataSource.applyAdditionalAction(dataSourceAction))
     }
 
-    object LocalAfterUpdateOrFailureOfRemote : RequestStrategy() {
+    object LocalAfterFullUpdateOrFailureOfRemote : RequestStrategy() {
         override fun <T> apply(
                 localDataSource: DataSource<T>,
                 remoteDataSource: DataSource<T>,
                 dataSourceAction: (DataSource<T>) -> Observable<T>
-        ): Observable<T> = LocalAfterUpdateWithRemote.apply(localDataSource, remoteDataSource, dataSourceAction)
+        ): Observable<T> = LocalAfterFullUpdateWithRemote.apply(localDataSource, remoteDataSource, dataSourceAction)
                 .onErrorResumeNext(localDataSource.applyAdditionalAction(dataSourceAction))
     }
 }

@@ -12,6 +12,6 @@ class DemoAppRequestStrategyFactory : RequestsStrategy {
         RequestType.CREATE -> RequestStrategy.OnlyRemote
         RequestType.UPDATE -> RequestStrategy.OnlyRemote
         RequestType.DELETE -> RequestStrategy.OnlyRemote
-        RequestType.FETCH -> RequestStrategy.LocalAfterUpdateOrFailureOfRemote
+        RequestType.FETCH -> RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote
     }
 }

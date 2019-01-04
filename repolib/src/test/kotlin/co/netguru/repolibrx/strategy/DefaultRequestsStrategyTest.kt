@@ -18,7 +18,7 @@ class DefaultRequestsStrategyTest {
 
         val result = defaultStrategy.select(request)
 
-        Assert.assertEquals(RequestStrategy.LocalAfterUpdateOrFailureOfRemote, result)
+        Assert.assertEquals(RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote, result)
     }
 
     @Test

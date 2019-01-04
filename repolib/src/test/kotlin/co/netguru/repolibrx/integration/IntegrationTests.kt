@@ -6,6 +6,7 @@ import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.initializer.createRepo
 import com.nhaarman.mockito_kotlin.*
+import io.reactivex.Completable
 import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Test
@@ -16,7 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner
 /**
  * Test are created for whole dependency stack. Only Data Sources are mocked.
  * Also, to test behavior of the library, [DefaultRequestsStrategy] strategy is used.
- * DefaultStrategy uses RequestStrategy.LocalAfterUpdateOrFailureOfRemote for all FETCH requests.
+ * DefaultStrategy uses RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote for all FETCH requests.
  * All other types of requests will be sent directly to the Remote data source by default
  * using DefaultRequestsStrategy logic.
  */
@@ -49,7 +50,6 @@ class IntegrationTests {
 
     private val localDataSourceMock: DataSource<TestDataEntity> = mock {
         on { fetch(any()) } doReturn Observable.fromIterable(localData)
-        on { update(any()) } doAnswer returnRequested
     }
 
     private val remoteDataSourceMock: DataSource<TestDataEntity> = mock {
@@ -83,6 +83,8 @@ class IntegrationTests {
 
     @Test
     fun `when FETCH is subscribed and LocalData Source emit items, then receive items from LOCAL`() {
+        whenever(localDataSourceMock.delete(any())).thenReturn(Completable.complete().toObservable())
+        whenever(localDataSourceMock.create(any())).thenReturn(Completable.complete().toObservable())
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.fetch(query).test()
@@ -92,7 +94,8 @@ class IntegrationTests {
         dataSubscriber.assertValues(localData[0], localData[1], localData[2])
         dataSubscriber.assertValueCount(localData.size)
         verify(remoteDataSourceMock).fetch(any())
-        verify(localDataSourceMock, times(remoteData.size)).update(any())
+        verify(localDataSourceMock).delete(any())
+        verify(localDataSourceMock, times(remoteData.size)).create(any())
         verify(localDataSourceMock).fetch(any())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
@@ -307,11 +310,13 @@ class IntegrationTests {
     }
 
     @Test
-    fun `when three requests fails then send all of them when another FETCH succeed with local update and return only fetch data`() {
+    fun `when three requests fails and FETCH succeed then return update local and return only fetch data`() {
         val error = Throwable("")
         whenever(remoteDataSourceMock.delete(any())).thenReturn(Observable.error(error))
+        whenever(localDataSourceMock.delete(any())).thenReturn(Completable.complete().toObservable())
         whenever(remoteDataSourceMock.update(any())).thenReturn(Observable.error(error))
         whenever(remoteDataSourceMock.create(any())).thenReturn(Observable.error(error))
+        whenever(localDataSourceMock.create(any())).thenReturn(Completable.complete().toObservable())
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val updateSubscriberFailed = repoLib.update(testDataEntityMock).test()
@@ -335,7 +340,8 @@ class IntegrationTests {
         verify(remoteDataSourceMock).update(any())
         verify(remoteDataSourceMock).create(any())
         verify(remoteDataSourceMock).fetch(any())
-        verify(localDataSourceMock, times(remoteData.size)).update(any())
+        verify(localDataSourceMock).delete(any())
+        verify(localDataSourceMock, times(remoteData.size)).create(any())
         verify(localDataSourceMock).fetch(any())
         verifyNoMoreInteractions(remoteDataSourceMock)
         verifyNoMoreInteractions(localDataSourceMock)

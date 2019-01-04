@@ -31,7 +31,8 @@ class MainActivity : DaggerAppCompatActivity() {
             demoViewModel.refresh()
         }
 
-        demoViewModel.subscribeListActions(adapter.updateSubject, adapter.removeSubject)
+        demoViewModel.setupUpdatingAction(adapter.updateSubject)
+        demoViewModel.setupRemovingAction(adapter.removeSubject)
 
         demoViewModel.getData { viewData ->
             swipeToRefresh.isRefreshing = false
