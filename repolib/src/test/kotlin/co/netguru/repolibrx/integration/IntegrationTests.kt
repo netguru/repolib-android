@@ -11,15 +11,14 @@ import io.reactivex.Observable
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.invocation.InvocationOnMock
 import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Test are created for whole dependency stack. Only Data Sources are mocked.
- * Also, to test behavior of the library, [DefaultRequestsStrategyFactoryFactory] strategy is used.
+ * Also, to test behavior of the library, [DefaultRequestsStrategyFactory] strategy is used.
  * DefaultStrategy uses RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote for all FETCH requests.
  * All other types of requests will be sent directly to the Remote data source by default
- * using DefaultRequestsStrategyFactoryFactory logic.
+ * using DefaultRequestsStrategyFactory logic.
  */
 @RunWith(MockitoJUnitRunner::class)
 class IntegrationTests {
@@ -37,26 +36,31 @@ class IntegrationTests {
 
     private val testDataEntityMock: TestDataEntity = mock()
     private val query: Query<TestDataEntity> = mock()
-    private val requestCaptor = argumentCaptor<Request<TestDataEntity>>()
-    private val returnRequested: (InvocationOnMock) -> Observable<TestDataEntity>? = { invocationOnMock ->
-        @Suppress("UNCHECKED_CAST")
-        val entity = (invocationOnMock.arguments[0] as Request<TestDataEntity>).entity
-        if (entity != null) {
-            Observable.just(entity)
-        } else {
-            Observable.just(remoteData.last())
-        }
-    }
-
     private val localDataSourceMock: DataSource<TestDataEntity> = mock {
         on { fetch(any()) } doReturn Observable.fromIterable(localData)
     }
 
     private val remoteDataSourceMock: DataSource<TestDataEntity> = mock {
         on { fetch(any()) } doReturn Observable.fromIterable(remoteData)
-        on { update(any()) } doAnswer returnRequested
-        on { create(any()) } doAnswer returnRequested
-        on { delete(any()) } doAnswer returnRequested
+        on { update(any()) } doAnswer { invocationOnMock ->
+            @Suppress("UNCHECKED_CAST")
+            val entity = (invocationOnMock.arguments[0] as Request.Update<TestDataEntity>).entity
+            Observable.just(entity)
+        }
+        on { create(any()) } doAnswer { invocationOnMock ->
+            @Suppress("UNCHECKED_CAST")
+            val entity = (invocationOnMock.arguments[0] as Request.Create<TestDataEntity>).entity
+            Observable.just(entity)
+        }
+        on { delete(any()) } doAnswer { invocationOnMock ->
+            @Suppress("UNCHECKED_CAST")
+            val entity = (invocationOnMock.arguments[0] as Request.Delete<TestDataEntity>).query.item
+            if (entity != null) {
+                Observable.just(entity)
+            } else {
+                Observable.just(remoteData.last())
+            }
+        }
     }
 
     private val repoLib = createRepo<TestDataEntity> {
@@ -106,6 +110,7 @@ class IntegrationTests {
      */
     @Test
     fun `when CREATE is subscribed then send request to the Remote DataSource only`() {
+        val requestCaptor = argumentCaptor<Request.Create<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.create(testDataEntityMock).test()
@@ -126,6 +131,7 @@ class IntegrationTests {
     fun `when CREATE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.create(any())).thenReturn(Observable.error(error))
+        val requestCaptor = argumentCaptor<Request.Create<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.create(testDataEntityMock).test()
@@ -146,6 +152,7 @@ class IntegrationTests {
      */
     @Test
     fun `when UPDATE is subscribed then send request to the Remote DataSource only`() {
+        val requestCaptor = argumentCaptor<Request.Update<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.update(testDataEntityMock).test()
@@ -166,6 +173,7 @@ class IntegrationTests {
     fun `when UPDATE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.update(any())).thenReturn(Observable.error(error))
+        val requestCaptor = argumentCaptor<Request.Update<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.update(testDataEntityMock).test()
@@ -186,6 +194,7 @@ class IntegrationTests {
      */
     @Test
     fun `when DELETE is subscribed then send request to the Remote DataSource only`() {
+        val requestCaptor = argumentCaptor<Request.Delete<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.delete(query).test()
@@ -205,6 +214,7 @@ class IntegrationTests {
     fun `when DELETE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.delete(any())).thenReturn(Observable.error(error))
+        val requestCaptor = argumentCaptor<Request.Delete<TestDataEntity>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.delete(query).test()

@@ -2,7 +2,6 @@ package co.netguru.repolibrx
 
 import co.netguru.repolibrx.data.Query
 import co.netguru.repolibrx.data.Request
-import co.netguru.repolibrx.data.RequestType
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.strategy.RequestStrategy
 import co.netguru.repolibrx.strategy.RequestsStrategyFactory
@@ -47,7 +46,7 @@ internal class RepoLibTest {
     private val testEntity = "test data"
     private val requestsStrategyFactoryMock: RequestsStrategyFactory = mock()
     private val query: Query<String> = mock()
-    private val requestCaptor = argumentCaptor<Request<String>>()
+    private val requestCaptor = argumentCaptor<Request.Fetch<String>>()
 
     private val repoLib: RepoLibRx<String> = RepoLib(localDataSource, remoteDataSource, requestsStrategyFactoryMock)
 
@@ -62,9 +61,7 @@ internal class RepoLibTest {
         verify(localDataSource).fetch(requestCaptor.capture())
         verify(remoteDataSource, never()).fetch(any())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
-        Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
+        Assert.assertEquals(query, requestCaptor.firstValue.query) 
     }
 
     @Test
@@ -78,8 +75,6 @@ internal class RepoLibTest {
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
     }
 
     @Test
@@ -94,8 +89,6 @@ internal class RepoLibTest {
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
         dataSubscriber.assertValueCount(remoteData.size)
         dataSubscriber.assertValues(remoteData[0], remoteData[1], remoteData[2], remoteData[3])
     }
@@ -113,8 +106,6 @@ internal class RepoLibTest {
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
         dataSubscriber.assertValueCount(localData.size)
         dataSubscriber.assertValues(localData[0], localData[1], localData[2])
     }
@@ -133,14 +124,12 @@ internal class RepoLibTest {
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
         dataSubscriber.assertNoValues()
     }
 
     @Test
     fun `when LocalAfterFullUpdateOrFailureOfRemote strategy is selected, then FETCH from remote update local and FETCH from local`() {
-        val dataCaptor = argumentCaptor<Request<String>>()
+        val dataCaptor = argumentCaptor<Request.Create<String>>()
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>()))
                 .thenReturn(RequestStrategy.LocalAfterFullUpdateWithRemote)
 
@@ -157,15 +146,13 @@ internal class RepoLibTest {
         Assert.assertEquals(dataCaptor.allValues[1].entity, remoteData[1])
         Assert.assertEquals(dataCaptor.allValues[2].entity, remoteData[2])
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
         dataSubscriber.assertValueCount(localData.size)
         dataSubscriber.assertValues(localData[0], localData[1], localData[2])
     }
 
     @Test
     fun `when LocalAfterFullUpdateOrFailureOfRemote strategy is selected, then FETCH from remote UPDATE local and FETCH local`() {
-        val dataCaptor = argumentCaptor<Request<String>>()
+        val dataCaptor = argumentCaptor<Request.Create<String>>()
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>()))
                 .thenReturn(RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote)
 
@@ -182,8 +169,7 @@ internal class RepoLibTest {
         Assert.assertEquals(dataCaptor.allValues[1].entity, remoteData[1])
         Assert.assertEquals(dataCaptor.allValues[2].entity, remoteData[2])
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
+
         dataSubscriber.assertValueCount(localData.size)
         dataSubscriber.assertValues(localData[0], localData[1], localData[2])
     }
@@ -201,8 +187,7 @@ internal class RepoLibTest {
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.FETCH, requestCaptor.secondValue.type)
+
         dataSubscriber.assertValueCount(localData.size)
         dataSubscriber.assertValues(localData[0], localData[1], localData[2])
     }
@@ -211,6 +196,7 @@ internal class RepoLibTest {
     @Test
     fun `when only OnlyLocal strategy is selected and shouldBeDataPublished is true, then call CREATE on LOCAL data source only and publish data`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyLocal)
+        val requestCaptor = argumentCaptor<Request.Create<String>>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val subscriber = repoLib.create(testEntity).test()
@@ -222,13 +208,12 @@ internal class RepoLibTest {
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
         Assert.assertEquals(requestCaptor.firstValue, requestCaptor.secondValue)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when only OnlyRemote strategy is selected, then call CREATE on REMOTE data source only`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyRemote)
+        val requestCaptor = argumentCaptor<Request.Create<String>>()
 
         val subscriber = repoLib.create(testEntity).test()
 
@@ -237,13 +222,12 @@ internal class RepoLibTest {
         verify(remoteDataSource).create(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when BOTH strategy is selected, then call CREATE on both data sources with same query object`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.Both)
+        val requestCaptor = argumentCaptor<Request.Create<String>>()
 
         val subscriber = repoLib.create(testEntity).test()
 
@@ -252,14 +236,13 @@ internal class RepoLibTest {
         verify(remoteDataSource).create(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.CREATE, requestCaptor.secondValue.type)
     }
 
     //UPDATE tests
     @Test
     fun `when only OnlyLocal strategy is selected, then call UPDATE on LOCAL data source only`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyLocal)
+        val requestCaptor = argumentCaptor<Request.Update<String>>()
 
         val subscriber = repoLib.update(testEntity).test()
 
@@ -268,13 +251,12 @@ internal class RepoLibTest {
         verify(remoteDataSource, never()).update(any())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when only OnlyRemote strategy is selected, then call UPDATE on REMOTE data source only`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyRemote)
+        val requestCaptor = argumentCaptor<Request.Update<String>>()
 
         val subscriber = repoLib.update(testEntity).test()
 
@@ -283,13 +265,12 @@ internal class RepoLibTest {
         verify(remoteDataSource).update(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when BOTH strategy is selected, then call UPATE on both data sources with same query object`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.Both)
+        val requestCaptor = argumentCaptor<Request.Update<String>>()
 
         val subscriber = repoLib.update(testEntity).test()
 
@@ -298,14 +279,13 @@ internal class RepoLibTest {
         verify(remoteDataSource).update(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(testEntity, requestCaptor.firstValue.entity)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.UPDATE, requestCaptor.secondValue.type)
     }
 
     //DELETE tests
     @Test
     fun `when only OnlyLocal strategy is selected, then call DELETE on LOCAL data source only`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyLocal)
+        val requestCaptor = argumentCaptor<Request.Delete<String>>()
 
         val subscriber = repoLib.delete(query).test()
 
@@ -314,13 +294,12 @@ internal class RepoLibTest {
         verify(remoteDataSource, never()).delete(any())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when only OnlyRemote strategy is selected, then call DELETE on REMOTE data source only`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.OnlyRemote)
+        val requestCaptor = argumentCaptor<Request.Delete<String>>()
 
         val subscriber = repoLib.delete(query).test()
 
@@ -329,13 +308,12 @@ internal class RepoLibTest {
         verify(remoteDataSource).delete(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.secondValue.type)
     }
 
     @Test
     fun `when BOTH strategy is selected, then call DELETE on both data sources with same query object`() {
         whenever(requestsStrategyFactoryMock.select(any<Request<String>>())).thenReturn(RequestStrategy.Both)
+        val requestCaptor = argumentCaptor<Request.Delete<String>>()
 
         val subscriber = repoLib.delete(query).test()
 
@@ -344,7 +322,5 @@ internal class RepoLibTest {
         verify(remoteDataSource).delete(requestCaptor.capture())
         verify(requestsStrategyFactoryMock).select(requestCaptor.capture())
         Assert.assertEquals(query, requestCaptor.firstValue.query)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.firstValue.type)
-        Assert.assertEquals(RequestType.DELETE, requestCaptor.secondValue.type)
     }
 }
