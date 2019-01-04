@@ -1,4 +1,8 @@
 package co.netguru.repolib.feature.demo.datasource.localstore
 
-//todo add fields and realmObject
-class DataDao
+import io.realm.RealmObject
+
+open class DataDao : RealmObject() {
+    var id: Long? = null
+    var value: String? = null
+}

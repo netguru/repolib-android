@@ -1,25 +1,35 @@
 package co.netguru.repolib.feature.demo.datasource.api
 
-import co.netguru.repolib.feature.demo.di.DataEntity
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
+import co.netguru.repolib.feature.demo.data.SourceType
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
 import io.reactivex.Observable
 
-class RetrofitDataSource(api: API) : DataSource<DataEntity> {
+//todo add mapping from API MODELS to local models
+class RetrofitDataSource(private val api: API) : DataSource<DemoDataEntity> {
 
-    override fun create(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(1, "create remote")
+    private val remoteToLocal: (RemoteDataEntity) -> DemoDataEntity = {
+        DemoDataEntity(it.id, it.note, SourceType.REMOTE)
     }
 
-    override fun delete(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(2, "delete remote")
+    private val localToRemote: (DemoDataEntity?) -> RemoteDataEntity = {
+        if (it != null) {
+            RemoteDataEntity(it.id, it.value)
+        } else {
+            throw UnsupportedOperationException("entity is null")
+        }
     }
 
-    override fun fetch(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(3, "fetch remote")
-    }
+    override fun fetch(request: Request<DemoDataEntity>): Observable<DemoDataEntity> = api.get()
+            .flatMap { Observable.fromIterable(it) }.map(remoteToLocal)
 
-    override fun update(request: Request<DataEntity>): Observable<DataEntity> = Observable.fromCallable {
-        DataEntity(4, "update remote")
-    }
+    override fun create(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.create(localToRemote(request.entity)).map(remoteToLocal)
+
+    override fun delete(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.delete(localToRemote(request.query?.item).id).toObservable()
+
+    override fun update(request: Request<DemoDataEntity>)
+            : Observable<DemoDataEntity> = api.update(localToRemote(request.entity)).map(remoteToLocal)
 }

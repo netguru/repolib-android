@@ -74,6 +74,10 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    androidExtensions {
+        experimental = true
+    }
 }
 
 dependencies {
@@ -89,6 +93,20 @@ dependencies {
     // Support
     implementation libs.appCompat
     implementation libs.recyclerView
+    implementation libs.material
+    implementation libs.cardView
+
+    //LifeCycle
+    implementation libs.lifeCycleCommon
+    implementation libs.liveData
+    implementation libs.lifeCycleExtensions
+    implementation libs.viewModel
+
+    //LifeCycle
+    implementation libs.lifeCycleCommon
+    implementation libs.liveData
+    implementation libs.lifeCycleExtensions
+    implementation libs.viewModel
 
     //LifeCycle
     implementation libs.lifeCycleCommon

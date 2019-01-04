@@ -7,4 +7,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
+    <style name="DefaultDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:minWidth" type="dimen">@dimen/default_dialog_width</item>
+    </style>
 </resources>

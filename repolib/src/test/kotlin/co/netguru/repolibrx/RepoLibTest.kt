@@ -122,7 +122,7 @@ internal class RepoLibTest {
     @Test
     fun `when LocalOnRemoteFailure strategy is selected and remote FETCH fail, then return Error`() {
         val error = Throwable(testResponse)
-        whenever(requestsStrategyMock.select(any<Request<String>>())).thenReturn(RequestStrategy.LocalAfterUpdateWithRemote)
+        whenever(requestsStrategyMock.select(any<Request<String>>())).thenReturn(RequestStrategy.LocalAfterFullUpdateWithRemote)
         whenever(remoteDataSource.fetch(any())).thenReturn(Observable.error(error))
 
         val dataSubscriber = repoLib.outputDataStream().test()
@@ -139,10 +139,10 @@ internal class RepoLibTest {
     }
 
     @Test
-    fun `when LocalAfterUpdateWithRemote strategy is selected, then FETCH from remote update local and FETCH from local`() {
+    fun `when LocalAfterFullUpdateOrFailureOfRemote strategy is selected, then FETCH from remote update local and FETCH from local`() {
         val dataCaptor = argumentCaptor<Request<String>>()
         whenever(requestsStrategyMock.select(any<Request<String>>()))
-                .thenReturn(RequestStrategy.LocalAfterUpdateWithRemote)
+                .thenReturn(RequestStrategy.LocalAfterFullUpdateWithRemote)
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val subscriber = repoLib.fetch(query).test()
@@ -151,7 +151,8 @@ internal class RepoLibTest {
         verify(localDataSource).fetch(requestCaptor.capture())
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyMock).select(requestCaptor.capture())
-        verify(localDataSource, times(remoteData.size)).update(dataCaptor.capture())
+        verify(localDataSource).delete(any())
+        verify(localDataSource, times(remoteData.size)).create(dataCaptor.capture())
         Assert.assertEquals(dataCaptor.allValues[0].entity, remoteData[0])
         Assert.assertEquals(dataCaptor.allValues[1].entity, remoteData[1])
         Assert.assertEquals(dataCaptor.allValues[2].entity, remoteData[2])
@@ -163,10 +164,10 @@ internal class RepoLibTest {
     }
 
     @Test
-    fun `when LocalAfterUpdateOrFailureOfRemote strategy is selected, then FETCH from remote UPDATE local and FETCH local`() {
+    fun `when LocalAfterFullUpdateOrFailureOfRemote strategy is selected, then FETCH from remote UPDATE local and FETCH local`() {
         val dataCaptor = argumentCaptor<Request<String>>()
         whenever(requestsStrategyMock.select(any<Request<String>>()))
-                .thenReturn(RequestStrategy.LocalAfterUpdateOrFailureOfRemote)
+                .thenReturn(RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote)
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val subscriber = repoLib.fetch(query).test()
@@ -175,7 +176,8 @@ internal class RepoLibTest {
         verify(localDataSource).fetch(requestCaptor.capture())
         verify(remoteDataSource).fetch(requestCaptor.capture())
         verify(requestsStrategyMock).select(requestCaptor.capture())
-        verify(localDataSource, times(remoteData.size)).update(dataCaptor.capture())
+        verify(localDataSource).delete(any())
+        verify(localDataSource, times(remoteData.size)).create(dataCaptor.capture())
         Assert.assertEquals(dataCaptor.allValues[0].entity, remoteData[0])
         Assert.assertEquals(dataCaptor.allValues[1].entity, remoteData[1])
         Assert.assertEquals(dataCaptor.allValues[2].entity, remoteData[2])
@@ -188,7 +190,7 @@ internal class RepoLibTest {
 
     @Test
     fun `when LocalAfterUpdateOrFailureOfRemote strategy is selected and remote FETCH fail, then FETCh from local`() {
-        whenever(requestsStrategyMock.select(any<Request<String>>())).thenReturn(RequestStrategy.LocalAfterUpdateOrFailureOfRemote)
+        whenever(requestsStrategyMock.select(any<Request<String>>())).thenReturn(RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote)
         whenever(remoteDataSource.fetch(any())).thenReturn(Observable.error(Throwable(testResponse)))
 
         val dataSubscriber = repoLib.outputDataStream().test()
