@@ -1,6 +1,8 @@
 package co.netguru.repolib.feature.demo.datasource.api
 
 import android.net.ConnectivityManager
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
+import co.netguru.repolib.feature.demo.data.SourceType
 import com.google.gson.Gson
 import okhttp3.*
 import okio.Buffer
@@ -10,12 +12,13 @@ class MockingInterceptor(
         private val connectivityManager: ConnectivityManager
 ) : Interceptor {
 
-    private val remoteDataBaseMock: MutableList<RemoteDataEntity> = arrayListOf(
-            RemoteDataEntity(1, "remote note 1"),
-            RemoteDataEntity(2, "remote note 2"),
-            RemoteDataEntity(3, "remote note 3"),
-            RemoteDataEntity(4, "remote note 4"),
-            RemoteDataEntity(5, "remote note 5")
+    private val remoteDataBaseMock: MutableList<DemoDataEntity> = arrayListOf(
+            DemoDataEntity(0, "remote note 0", SourceType.REMOTE),
+            DemoDataEntity(1, "remote note 1", SourceType.REMOTE),
+            DemoDataEntity(2, "remote note 2", SourceType.REMOTE),
+            DemoDataEntity(3, "remote note 3", SourceType.REMOTE),
+            DemoDataEntity(4, "remote note 4", SourceType.REMOTE),
+            DemoDataEntity(5, "remote note 5", SourceType.REMOTE)
     )
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -70,16 +73,18 @@ class MockingInterceptor(
 
     private fun createElement(request: Request): String {
         val requestedElement = extractElementFromBody(request.body())
-        requestedElement.id = remoteDataBaseMock.last().id.plus(1)
-        remoteDataBaseMock.add(requestedElement)
-        return gson.toJson(requestedElement)
+        remoteDataBaseMock.add(requestedElement.copy(
+                id = remoteDataBaseMock.last().id.plus(1),
+                sourceType = SourceType.REMOTE
+        ))
+        return gson.toJson(remoteDataBaseMock.last())
     }
 
-    private fun extractElementFromBody(requestBody: RequestBody?): RemoteDataEntity {
+    private fun extractElementFromBody(requestBody: RequestBody?): DemoDataEntity {
         val sink = Buffer()
         requestBody?.writeTo(sink)
         val json = sink.readUtf8()
         sink.writeUtf8(json)
-        return gson.fromJson(json, RemoteDataEntity::class.java)
+        return gson.fromJson(json, DemoDataEntity::class.java)
     }
 }

@@ -16,10 +16,10 @@ import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Test are created for whole dependency stack. Only Data Sources are mocked.
- * Also, to test behavior of the library, [DefaultRequestsStrategy] strategy is used.
+ * Also, to test behavior of the library, [DefaultRequestsStrategyFactoryFactory] strategy is used.
  * DefaultStrategy uses RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote for all FETCH requests.
  * All other types of requests will be sent directly to the Remote data source by default
- * using DefaultRequestsStrategy logic.
+ * using DefaultRequestsStrategyFactoryFactory logic.
  */
 @RunWith(MockitoJUnitRunner::class)
 class IntegrationTests {

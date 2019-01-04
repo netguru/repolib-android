@@ -1,13 +1,12 @@
 package co.netguru.repolibrx.strategy
 
 import co.netguru.repolibrx.data.Request
-import co.netguru.repolibrx.data.RequestType
 
-class DefaultRequestsStrategy(
+class DefaultRequestsStrategyFactory(
         private val requestsStrategy: RequestStrategy = RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote
-) : RequestsStrategy {
+) : RequestsStrategyFactory {
 
-    override fun <T> select(request: Request<T>): Strategy = if (request.type == RequestType.FETCH) {
+    override fun <T> select(request: Request<T>): Strategy = if (request is Request.Fetch) {
         requestsStrategy
     } else {
         RequestStrategy.OnlyRemote
