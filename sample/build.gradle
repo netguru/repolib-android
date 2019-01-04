@@ -108,6 +108,12 @@ dependencies {
     implementation libs.lifeCycleExtensions
     implementation libs.viewModel
 
+    //LifeCycle
+    implementation libs.lifeCycleCommon
+    implementation libs.liveData
+    implementation libs.lifeCycleExtensions
+    implementation libs.viewModel
+
     // MVP
     implementation(libs.mosby) {
         exclude module: 'appcompat-v7'
