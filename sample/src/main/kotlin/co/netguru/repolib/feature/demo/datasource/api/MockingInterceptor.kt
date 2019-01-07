@@ -60,7 +60,7 @@ class MockingInterceptor(
     }
 
     private fun updateElement(request: Request): String {
-        val requestedElement = extractElementFromBody(request.body())
+        val requestedElement = extractElementFromBody(request.body()).copy(sourceType = SourceType.REMOTE)
         with(remoteDataBaseMock) {
             set(
                     indexOf(find { it.id == requestedElement.id }),

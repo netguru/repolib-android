@@ -2,7 +2,6 @@ package co.netguru.repolibrx.integration
 
 import co.netguru.repolibrx.TestDataEntity
 import co.netguru.repolibrx.data.Query
-import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.initializer.createRepo
 import com.nhaarman.mockito_kotlin.*
@@ -15,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Test are created for whole dependency stack. Only Data Sources are mocked.
- * Also, to test behavior of the library, [DefaultRequestsStrategyFactory] strategy is used.
+ * Also, to test behavior of the library, DefaultRequestsStrategyFactory strategy is used.
  * DefaultStrategy uses RequestStrategy.LocalAfterFullUpdateOrFailureOfRemote for all FETCH requests.
  * All other types of requests will be sent directly to the Remote data source by default
  * using DefaultRequestsStrategyFactory logic.
@@ -35,7 +34,7 @@ class IntegrationTests {
     )
 
     private val testDataEntityMock: TestDataEntity = mock()
-    private val query: Query<TestDataEntity> = mock()
+    private val query: Query = mock()
     private val localDataSourceMock: DataSource<TestDataEntity> = mock {
         on { fetch(any()) } doReturn Observable.fromIterable(localData)
     }
@@ -44,23 +43,13 @@ class IntegrationTests {
         on { fetch(any()) } doReturn Observable.fromIterable(remoteData)
         on { update(any()) } doAnswer { invocationOnMock ->
             @Suppress("UNCHECKED_CAST")
-            val entity = (invocationOnMock.arguments[0] as Request.Update<TestDataEntity>).entity
-            Observable.just(entity)
+            Observable.just(invocationOnMock.arguments[0] as TestDataEntity)
         }
         on { create(any()) } doAnswer { invocationOnMock ->
             @Suppress("UNCHECKED_CAST")
-            val entity = (invocationOnMock.arguments[0] as Request.Create<TestDataEntity>).entity
-            Observable.just(entity)
+            Observable.just(invocationOnMock.arguments[0] as TestDataEntity)
         }
-        on { delete(any()) } doAnswer { invocationOnMock ->
-            @Suppress("UNCHECKED_CAST")
-            val entity = (invocationOnMock.arguments[0] as Request.Delete<TestDataEntity>).query.item
-            if (entity != null) {
-                Observable.just(entity)
-            } else {
-                Observable.just(remoteData.last())
-            }
-        }
+        on { delete(any()) } doReturn (Observable.just(remoteData.last()))
     }
 
     private val repoLib = createRepo<TestDataEntity> {
@@ -110,7 +99,7 @@ class IntegrationTests {
      */
     @Test
     fun `when CREATE is subscribed then send request to the Remote DataSource only`() {
-        val requestCaptor = argumentCaptor<Request.Create<TestDataEntity>>()
+        val dataCaptor = argumentCaptor<TestDataEntity>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.create(testDataEntityMock).test()
@@ -121,17 +110,17 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertNoErrors()
         verify(localDataSourceMock, never()).create(any())
-        verify(remoteDataSourceMock).create(requestCaptor.capture())
+        verify(remoteDataSourceMock).create(dataCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(testDataEntityMock, requestCaptor.firstValue.entity)
+        Assert.assertEquals(testDataEntityMock, dataCaptor.firstValue)
     }
 
     @Test
     fun `when CREATE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.create(any())).thenReturn(Observable.error(error))
-        val requestCaptor = argumentCaptor<Request.Create<TestDataEntity>>()
+        val dataCaptor = argumentCaptor<TestDataEntity>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.create(testDataEntityMock).test()
@@ -141,10 +130,10 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertError(error)
         verify(localDataSourceMock, never()).create(any())
-        verify(remoteDataSourceMock).create(requestCaptor.capture())
+        verify(remoteDataSourceMock).create(dataCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(testDataEntityMock, requestCaptor.firstValue.entity)
+        Assert.assertEquals(testDataEntityMock, dataCaptor.firstValue)
     }
 
     /**
@@ -152,7 +141,7 @@ class IntegrationTests {
      */
     @Test
     fun `when UPDATE is subscribed then send request to the Remote DataSource only`() {
-        val requestCaptor = argumentCaptor<Request.Update<TestDataEntity>>()
+        val dataCaptor = argumentCaptor<TestDataEntity>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.update(testDataEntityMock).test()
@@ -163,17 +152,18 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertNoErrors()
         verify(localDataSourceMock, never()).update(any())
-        verify(remoteDataSourceMock).update(requestCaptor.capture())
+        verify(remoteDataSourceMock).update(dataCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(testDataEntityMock, requestCaptor.firstValue.entity)
+        Assert.assertEquals(testDataEntityMock, dataCaptor.firstValue)
     }
 
     @Test
     fun `when UPDATE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.update(any())).thenReturn(Observable.error(error))
-        val requestCaptor = argumentCaptor<Request.Update<TestDataEntity>>()
+        val dataCaptor = argumentCaptor<TestDataEntity>()
+
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.update(testDataEntityMock).test()
@@ -183,10 +173,10 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertError(error)
         verify(localDataSourceMock, never()).update(any())
-        verify(remoteDataSourceMock).update(requestCaptor.capture())
+        verify(remoteDataSourceMock).update(dataCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(testDataEntityMock, requestCaptor.firstValue.entity)
+        Assert.assertEquals(testDataEntityMock, dataCaptor.firstValue)
     }
 
     /**
@@ -194,7 +184,7 @@ class IntegrationTests {
      */
     @Test
     fun `when DELETE is subscribed then send request to the Remote DataSource only`() {
-        val requestCaptor = argumentCaptor<Request.Delete<TestDataEntity>>()
+        val queryCaptor = argumentCaptor<Query>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.delete(query).test()
@@ -204,17 +194,17 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertNoErrors()
         verify(localDataSourceMock, never()).delete(any())
-        verify(remoteDataSourceMock).delete(requestCaptor.capture())
+        verify(remoteDataSourceMock).delete(queryCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(query, requestCaptor.firstValue.query)
+        Assert.assertEquals(query, queryCaptor.firstValue)
     }
 
     @Test
     fun `when DELETE is subscribed and request fails then return error`() {
         val error = Throwable("test")
         whenever(remoteDataSourceMock.delete(any())).thenReturn(Observable.error(error))
-        val requestCaptor = argumentCaptor<Request.Delete<TestDataEntity>>()
+        val queryCaptor = argumentCaptor<Query>()
 
         val dataSubscriber = repoLib.outputDataStream().test()
         val requestSubscriber = repoLib.delete(query).test()
@@ -224,10 +214,10 @@ class IntegrationTests {
         requestSubscriber.assertNoValues()
         requestSubscriber.assertError(error)
         verify(localDataSourceMock, never()).delete(any())
-        verify(remoteDataSourceMock).delete(requestCaptor.capture())
+        verify(remoteDataSourceMock).delete(queryCaptor.capture())
         verifyNoMoreInteractions(localDataSourceMock)
         verifyNoMoreInteractions(remoteDataSourceMock)
-        Assert.assertEquals(query, requestCaptor.firstValue.query)
+        Assert.assertEquals(query, queryCaptor.firstValue)
     }
 
     /**

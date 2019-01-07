@@ -8,11 +8,11 @@ interface RepoLibRx<T> {
 
     fun outputDataStream(): Flowable<T>
 
-    fun fetch(query: Query<T>): Completable
+    fun fetch(query: Query): Completable
 
     fun create(entity: T): Completable
 
     fun update(entity: T): Completable
 
-    fun delete(query: Query<T>): Completable
+    fun delete(query: Query): Completable
 }
