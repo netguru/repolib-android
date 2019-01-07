@@ -78,6 +78,9 @@ android {
     androidExtensions {
         experimental = true
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -157,7 +160,9 @@ dependencies {
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
+    testCompile test.archCompontentsUnitTests
 
     //REPO LIB
     implementation project(path: ':repolib')
+
 }

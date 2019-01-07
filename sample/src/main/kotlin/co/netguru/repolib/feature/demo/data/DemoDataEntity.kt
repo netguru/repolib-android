@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class DemoDataEntity(
         val id: Long = UNDEFINED,
         val value: String = "",
-        val sourceType: SourceType = SourceType.UNKNOWN
+        val sourceType: SourceType = SourceType.REMOTE
 ) : Parcelable
 
 const val UNDEFINED: Long = -1

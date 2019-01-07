@@ -15,7 +15,7 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
         DemoDataEntity(it.id!!, it.value!!, SourceType.LOCAL)
     }
 
-    override fun fetch(request: Request<DemoDataEntity>)
+    override fun fetch(request: Request.Fetch<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Single.fromCallable {
             realm.where(DataDao::class.java)
@@ -28,28 +28,28 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
                 .map(daoToEntityMapperDemo)
     }
 
-    override fun create(request: Request<DemoDataEntity>)
+    override fun create(request: Request.Create<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Observable.fromCallable {
-            val entityDemo: DemoDataEntity? = request.entity
+            val entityDemo: DemoDataEntity = request.entity
             realm.executeTransaction {
                 realm.createObject(DataDao::class.java)
                         .apply {
-                            id = entityDemo?.id
-                            value = entityDemo?.value
+                            id = entityDemo.id
+                            value = entityDemo.value
                         }
             }
             entityDemo
         }
     }
 
-    override fun delete(request: Request<DemoDataEntity>)
+    override fun delete(request: Request.Delete<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Single.fromCallable {
             val query = realm.where(DataDao::class.java)
-            if (request.query?.item != null) {
+            if (request.query.item != null) {
 //                todo reimplement query all
-                query.equalTo("id", request.query?.item?.id)
+                query.equalTo("id", request.query.item?.id)
             }
             query.findAll()
         }.doOnSuccess { item ->
@@ -59,19 +59,18 @@ class RealmDataSource(private val realmConfiguration: RealmConfiguration) : Data
         }.ignoreElement().toObservable<DemoDataEntity>()
     }
 
-    override fun update(request: Request<DemoDataEntity>)
+    override fun update(request: Request.Update<DemoDataEntity>)
             : Observable<DemoDataEntity> = executeLambdaForRealm { realm ->
         Single.fromCallable {
             val item = realm.where(DataDao::class.java)
-                    .equalTo("id", request.query?.item?.id)
+                    .equalTo("id", request.entity.id)
                     .findFirst()
-            realm.executeTransaction { item?.value = request.query?.item?.value }
+            realm.executeTransaction { item?.value = request.entity.value }
             item
         }.toObservable().map(daoToEntityMapperDemo)
 
     }
 
-    //  todo to use it after refactor
     private fun executeLambdaForRealm(realmAction: (Realm) -> Observable<DemoDataEntity>)
             : Observable<DemoDataEntity> = Observable.using(
             { Realm.getInstance(realmConfiguration) },

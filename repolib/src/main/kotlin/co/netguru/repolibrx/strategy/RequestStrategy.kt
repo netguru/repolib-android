@@ -2,7 +2,6 @@ package co.netguru.repolibrx.strategy
 
 import co.netguru.repolibrx.data.Query
 import co.netguru.repolibrx.data.Request
-import co.netguru.repolibrx.data.RequestType
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.datasource.applyAdditionalAction
 import co.netguru.repolibrx.datasource.asObservable
@@ -10,7 +9,7 @@ import io.reactivex.Observable
 
 /**
  * Sealed class that contains predefined data flow's.
- * This data flows are used by to define requestsStrategy for specific data types
+ * This data flows are used by to define requestsStrategyFactory for specific data types
  */
 sealed class RequestStrategy : Strategy {
     object OnlyLocal : RequestStrategy() {
@@ -50,10 +49,10 @@ sealed class RequestStrategy : Strategy {
                 .flatMapObservable {
                     localDataSource.delete(
 //                            todo create abstraction for Query ALL
-                            Request(RequestType.DELETE, query = object : Query<T>(null) {})
+                            Request.Delete(query = object : Query<T>(null) {})
                     ).ignoreElements().andThen(Observable.fromIterable(it))
                 }.flatMap {
-                    localDataSource.create(Request(RequestType.CREATE, it))
+                    localDataSource.create(Request.Create(it))
                 }.ignoreElements()
                 .andThen(localDataSource.applyAdditionalAction(dataSourceAction))
     }

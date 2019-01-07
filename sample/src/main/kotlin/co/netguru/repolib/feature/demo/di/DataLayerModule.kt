@@ -4,7 +4,7 @@ import co.netguru.repolib.application.scope.AppScope
 import co.netguru.repolib.common.LocalDataSourceQualifier
 import co.netguru.repolib.common.RemoteDataSourceQualifier
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
-import co.netguru.repolib.feature.demo.datasource.DemoAppRequestStrategyFactory
+import co.netguru.repolib.feature.demo.datasource.DemoAppRequestStrategyFactoryFactory
 import co.netguru.repolib.feature.demo.datasource.api.API
 import co.netguru.repolib.feature.demo.datasource.api.RetrofitDataSource
 import co.netguru.repolib.feature.demo.datasource.localstore.RealmDataSource
@@ -76,17 +76,17 @@ class DataLayerModule {
 
     @AppScope
     @Provides
-    fun provideRequestStrategyFactory(): DemoAppRequestStrategyFactory = DemoAppRequestStrategyFactory()
+    fun provideRequestStrategyFactory(): DemoAppRequestStrategyFactoryFactory = DemoAppRequestStrategyFactoryFactory()
 
     @AppScope
     @Provides
     fun provideRepoLibRx(
             @LocalDataSourceQualifier localDemoDataSource: DataSource<DemoDataEntity>,
             @RemoteDataSourceQualifier remoteDemoDataSource: DataSource<DemoDataEntity>,
-            demoAppRequestStrategyFactory: DemoAppRequestStrategyFactory
+            demoAppRequestStrategyFactory: DemoAppRequestStrategyFactoryFactory
     ): RepoLibRx<DemoDataEntity> = createRepo {
         localDataSourceController = localDemoDataSource
         remoteDataSourceController = remoteDemoDataSource
-        requestsStrategy = demoAppRequestStrategyFactory
+        requestsStrategyFactory = demoAppRequestStrategyFactory
     }
 }

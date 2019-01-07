@@ -2,6 +2,7 @@ package co.netguru.repolib.feature.demo.datasource.api
 
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockito_kotlin.doReturn
@@ -45,9 +46,9 @@ class MockingInterceptorTest {
         val response = mockingInterceptor.intercept(chainMock)
 
         //then
-        val listOfItems: List<RemoteDataEntity> = gson.fromJson(
+        val listOfItems: List<DemoDataEntity> = gson.fromJson(
                 response.body()?.string(),
-                object : TypeToken<List<RemoteDataEntity>>() {}.type
+                object : TypeToken<List<DemoDataEntity>>() {}.type
         )
         Assert.assertTrue(response.isSuccessful)
         Assert.assertEquals(200, response.code())
@@ -57,7 +58,7 @@ class MockingInterceptorTest {
     @Test
     fun whenCreateRequestSent_thenCreatedObjectAndAddItToAll() {
         //given
-        val newItem = RemoteDataEntity(note = "new item")
+        val newItem = DemoDataEntity(value = "new item")
         val getAllRequest = Request.Builder().url("http://example.com/getAll").build()
         val createRequest = Request.Builder()
                 .url("http://example.com/create")
@@ -77,18 +78,18 @@ class MockingInterceptorTest {
         val getAllResponse = mockingInterceptor.intercept(chainMock)
 
         //then
-        val listOfItems: List<RemoteDataEntity> = gson.fromJson(
+        val listOfItems: List<DemoDataEntity> = gson.fromJson(
                 getAllResponse.body()?.string(),
-                object : TypeToken<List<RemoteDataEntity>>() {}.type
+                object : TypeToken<List<DemoDataEntity>>() {}.type
         )
-        val createdItem = gson.fromJson(createResponse.body()?.string(), RemoteDataEntity::class.java)
+        val createdItem = gson.fromJson(createResponse.body()?.string(), DemoDataEntity::class.java)
         Assert.assertTrue(createResponse.isSuccessful)
         Assert.assertEquals(200, createResponse.code())
         Assert.assertTrue(getAllResponse.isSuccessful)
         Assert.assertEquals(200, getAllResponse.code())
         Assert.assertEquals(PREDEFINED_ITEMS_COUNT + 1, listOfItems.size)
-        Assert.assertNotNull(listOfItems.find { it.note == newItem.note })
-        Assert.assertEquals(newItem.note, createdItem.note)
+        Assert.assertNotNull(listOfItems.find { it.value == newItem.value })
+        Assert.assertEquals(newItem.value, createdItem.value)
     }
 
     @Test
@@ -114,9 +115,9 @@ class MockingInterceptorTest {
         val getAllResponse = mockingInterceptor.intercept(chainMock)
 
         //then
-        val listOfItems: List<RemoteDataEntity> = gson.fromJson(
+        val listOfItems: List<DemoDataEntity> = gson.fromJson(
                 getAllResponse.body()?.string(),
-                object : TypeToken<List<RemoteDataEntity>>() {}.type
+                object : TypeToken<List<DemoDataEntity>>() {}.type
         )
         Assert.assertTrue(deleteResponse.isSuccessful)
         Assert.assertEquals(200, deleteResponse.code())
@@ -129,7 +130,7 @@ class MockingInterceptorTest {
     @Test
     fun whenUpdateRequestSent_thenUpdateObjectOnList() {
         //given
-        val itemToUpdate = RemoteDataEntity(id = 2, note = "updated text")
+        val itemToUpdate = DemoDataEntity(id = 2, value = "updated text")
         val getAllRequest = Request.Builder().url("http://example.com/getAll").build()
         val update = Request.Builder()
                 .url("http://example.com/update")
@@ -149,9 +150,9 @@ class MockingInterceptorTest {
         val getAllResponse = mockingInterceptor.intercept(chainMock)
 
         //then
-        val listOfItems: List<RemoteDataEntity> = gson.fromJson(
+        val listOfItems: List<DemoDataEntity> = gson.fromJson(
                 getAllResponse.body()?.string(),
-                object : TypeToken<List<RemoteDataEntity>>() {}.type
+                object : TypeToken<List<DemoDataEntity>>() {}.type
         )
         Assert.assertTrue(createResponse.isSuccessful)
         Assert.assertEquals(200, createResponse.code())
@@ -160,6 +161,6 @@ class MockingInterceptorTest {
         Assert.assertEquals(PREDEFINED_ITEMS_COUNT, listOfItems.size)
         val updatedItem = listOfItems.find { it.id == itemToUpdate.id }
         Assert.assertNotNull(updatedItem)
-        Assert.assertEquals(itemToUpdate.note, updatedItem?.note)
+        Assert.assertEquals(itemToUpdate.value, updatedItem?.value)
     }
 }

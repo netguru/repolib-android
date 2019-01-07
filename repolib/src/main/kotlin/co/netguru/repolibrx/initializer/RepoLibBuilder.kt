@@ -3,8 +3,8 @@ package co.netguru.repolibrx.initializer
 import co.netguru.repolibrx.RepoLib
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.datasource.DataSource
-import co.netguru.repolibrx.strategy.DefaultRequestsStrategy
-import co.netguru.repolibrx.strategy.RequestsStrategy
+import co.netguru.repolibrx.strategy.DefaultRequestsStrategyFactory
+import co.netguru.repolibrx.strategy.RequestsStrategyFactory
 import kotlin.properties.Delegates
 
 class RepoLibBuilder<T> {
@@ -13,14 +13,13 @@ class RepoLibBuilder<T> {
 
     var remoteDataSourceController: DataSource<T> by Delegates.notNull()
 
-    //    todo rename to factory
-    var requestsStrategy: RequestsStrategy = DefaultRequestsStrategy()
+    var requestsStrategyFactory: RequestsStrategyFactory = DefaultRequestsStrategyFactory()
 
     fun build(): RepoLibRx<T> {
         return RepoLib(
                 localDataSource = localDataSourceController,
                 remoteDataSource = remoteDataSourceController,
-                requestsStrategy = requestsStrategy
+                requestsStrategyFactory = requestsStrategyFactory
         )
     }
 }
