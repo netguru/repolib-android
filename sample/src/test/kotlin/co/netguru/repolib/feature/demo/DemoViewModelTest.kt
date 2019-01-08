@@ -5,6 +5,7 @@ import co.netguru.repolib.RxTestSchedulerOverrideRule
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.data.Query
+import co.netguru.repolibrx.data.QueryWithParams
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -84,7 +85,7 @@ class DemoViewModelTest {
 
     @Test
     fun `when refresh() is called, then call fetch on repoLib`() {
-        val argumentCaptor = argumentCaptor<Query<DemoDataEntity>>()
+        val argumentCaptor = argumentCaptor<Query>()
 
         demoViewModel.refresh()
 
@@ -98,7 +99,7 @@ class DemoViewModelTest {
     fun `when repoLib return Throwable on fetch() method call, then show error using stateLiveData `() {
         val errorMessage = "test error"
         val throwable = Throwable(errorMessage)
-        val argumentCaptor = argumentCaptor<Query<DemoDataEntity>>()
+        val argumentCaptor = argumentCaptor<Query>()
         whenever(rxRepoLibRx.fetch(any())).thenReturn(Completable.error(throwable))
 
         demoViewModel.refresh()
@@ -114,13 +115,12 @@ class DemoViewModelTest {
     fun `when remove event received, then call remove on repoLib and publish item removeLiveData`() {
         val removeSubject = PublishSubject.create<DemoDataEntity>()
         demoViewModel.setupRemovingAction(removeSubject)
-        val argumentCaptor = argumentCaptor<Query<DemoDataEntity>>()
+        val argumentCaptor = argumentCaptor<QueryWithParams>()
 
         removeSubject.onNext(demoDataEntity)
 
         verify(rxRepoLibRx).delete(argumentCaptor.capture())
-        Assert.assertNotNull(argumentCaptor.firstValue.item)
-        Assert.assertEquals(demoDataEntity, argumentCaptor.firstValue.item)
+        Assert.assertEquals(demoDataEntity.id, argumentCaptor.firstValue.param("id"))
         demoViewModel.removedItemLiveData.observeForever {
             Assert.assertNotNull(it)
             Assert.assertEquals(demoDataEntity, it)
@@ -130,7 +130,7 @@ class DemoViewModelTest {
     @Test
     fun `when remove event received and repoLib returns error, then show error using stateLiveData`() {
         val removeSubject = PublishSubject.create<DemoDataEntity>()
-        val argumentCaptor = argumentCaptor<Query<DemoDataEntity>>()
+        val argumentCaptor = argumentCaptor<QueryWithParams>()
         val errorMessage = "test error"
         val throwable = Throwable(errorMessage)
         whenever(rxRepoLibRx.delete(any())).thenReturn(Completable.error(throwable))
@@ -139,8 +139,7 @@ class DemoViewModelTest {
         removeSubject.onNext(demoDataEntity)
 
         verify(rxRepoLibRx).delete(argumentCaptor.capture())
-        Assert.assertNotNull(argumentCaptor.firstValue.item)
-        Assert.assertEquals(demoDataEntity, argumentCaptor.firstValue.item)
+        Assert.assertEquals(demoDataEntity.id, argumentCaptor.firstValue.param("id"))
         demoViewModel.stateLiveData.observeForever {
             Assert.assertNotNull(it.error)
             Assert.assertEquals(errorMessage, it.error)

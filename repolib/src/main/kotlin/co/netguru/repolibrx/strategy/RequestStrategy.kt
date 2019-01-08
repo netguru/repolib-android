@@ -1,7 +1,6 @@
 package co.netguru.repolibrx.strategy
 
-import co.netguru.repolibrx.data.Query
-import co.netguru.repolibrx.data.Request
+import co.netguru.repolibrx.data.QueryAll
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.datasource.applyAdditionalAction
 import co.netguru.repolibrx.datasource.asObservable
@@ -47,12 +46,11 @@ sealed class RequestStrategy : Strategy {
         ): Observable<T> = remoteDataSource.applyAdditionalAction(dataSourceAction)
                 .toList()
                 .flatMapObservable {
-                    localDataSource.delete(
-//                            todo create abstraction for Query ALL
-                            Request.Delete(query = object : Query<T>(null) {})
-                    ).ignoreElements().andThen(Observable.fromIterable(it))
+                    localDataSource.delete(QueryAll)
+                            .ignoreElements()
+                            .andThen(Observable.fromIterable(it))
                 }.flatMap {
-                    localDataSource.create(Request.Create(it))
+                    localDataSource.create(it)
                 }.ignoreElements()
                 .andThen(localDataSource.applyAdditionalAction(dataSourceAction))
     }

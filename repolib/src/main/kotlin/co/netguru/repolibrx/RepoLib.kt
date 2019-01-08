@@ -30,13 +30,13 @@ class RepoLib<T>(
      * Source for the data emission is selected by the RequestsStrategyFactory object
      *
      */
-    override fun fetch(query: Query<T>): Completable = handleRequest(Request.Fetch(query))
+    override fun fetch(query: Query): Completable = handleRequest(Request.Fetch(query))
 
     override fun create(entity: T): Completable = handleRequest(Request.Create(entity))
 
     override fun update(entity: T): Completable = handleRequest(Request.Update(entity))
 
-    override fun delete(query: Query<T>): Completable = handleRequest(Request.Delete(query))
+    override fun delete(query: Query): Completable = handleRequest(Request.Delete(query))
 
     private fun handleRequest(request: Request<T>): Completable {
         return requestsStrategyFactory.select(request)
@@ -48,9 +48,9 @@ class RepoLib<T>(
 
     private fun selectAction(request: Request<T>)
             : (DataSource<T>) -> Observable<T> = when (request) {
-        is Request.Create<T> -> { dataSource -> dataSource.create(request) }
-        is Request.Delete<T> -> { dataSource -> dataSource.delete(request) }
-        is Request.Update<T> -> { dataSource -> dataSource.update(request) }
-        is Request.Fetch<T> -> { dataSource -> dataSource.fetch(request) }
+        is Request.Create<T> -> { dataSource -> dataSource.create(request.entity) }
+        is Request.Update<T> -> { dataSource -> dataSource.update(request.entity) }
+        is Request.Delete<T> -> { dataSource -> dataSource.delete(request.query) }
+        is Request.Fetch<T> -> { dataSource -> dataSource.fetch(request.query) }
     }
 }

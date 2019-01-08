@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import co.netguru.repolib.feature.demo.data.DemoDataEntity
 import co.netguru.repolib.feature.demo.data.ViewUpdateState
 import co.netguru.repolibrx.RepoLibRx
-import co.netguru.repolibrx.data.Query
+import co.netguru.repolibrx.data.QueryAll
+import co.netguru.repolibrx.data.QueryWithParams
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,7 +23,6 @@ class DemoViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private val query = object : Query<DemoDataEntity>() {}
     private val onComplete: () -> Unit = { stateLiveData.postValue(ViewUpdateState()) }
     private val onError: (Throwable) -> Unit = {
         Timber.e(it)
@@ -39,7 +39,7 @@ class DemoViewModel @Inject constructor(
         super.onCleared()
     }
 
-    fun refresh() = handleRequest(repoLibRx.fetch(query = query))
+    fun refresh() = handleRequest(repoLibRx.fetch(QueryAll))
     fun addNew(text: String) = handleRequest(repoLibRx.create(DemoDataEntity(-1, text)))
 
     fun getData(onItemReceived: (DemoDataEntity) -> Unit) {
@@ -58,9 +58,9 @@ class DemoViewModel @Inject constructor(
     }
 
     fun setupRemovingAction(removeSubject: PublishSubject<DemoDataEntity>) {
-        compositeDisposable += removeSubject.doOnNext { Timber.d("removing... $it") }
+        compositeDisposable += removeSubject
                 .flatMap { itemToDelete ->
-                    repoLibRx.delete(object : Query<DemoDataEntity>(itemToDelete) {})
+                    repoLibRx.delete(QueryWithParams("id" to itemToDelete.id))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .doOnComplete { removedItemLiveData.postValue(itemToDelete) }

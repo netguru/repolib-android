@@ -43,5 +43,7 @@
         android:layout_width="@dimen/icon_size_default"
         android:layout_height="@dimen/icon_size_default"
         android:layout_gravity="center_vertical|end"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"/>
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:contentDescription="@null"/>
 </androidx.cardview.widget.CardView>
