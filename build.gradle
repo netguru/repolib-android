@@ -1,12 +1,23 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply from: 'buildsystem/dependencies.gradle'
+apply from: 'buildsystem/bitrise.gradle'
+
+ext {
+    globalVersionCode = isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
+    globalVersionName = '0.8-beta'
+}
+
 buildscript {
 
-    ext.kotlin_version = '1.3.11'
+    ext.versions = [
+            realmVersion : '5.0.1',
+            kotlinVersion: '1.3.11',
+            minSdk       : 18,
+            targetSdk    : 28,
+            compileSdk   : 28,
+            toolsVersion : '28.0.3',
+    ]
 
-    ext {
-        realmVersion = '5.0.1'
-        kotlinVersion = '1.3.11'
-    }
     repositories {
         mavenCentral()
         mavenLocal()
@@ -21,20 +32,8 @@ buildscript {
         classpath "com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.6"
         classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.11.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.18.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "io.realm:realm-gradle-plugin:$realmVersion"
-    }
-}
-
-plugins {
-    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC6-4"
-}
-
-detekt {
-    profile("main") {
-        input = "$projectDir/app/src/main/kotlin"
-        config = "$projectDir/default-detekt-config.yml"
-        filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinVersion"
+        classpath "io.realm:realm-gradle-plugin:$versions.realmVersion"
     }
 }
 
@@ -53,5 +52,3 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-apply from: 'buildsystem/dependencies.gradle'
-apply from: 'buildsystem/bitrise.gradle'
