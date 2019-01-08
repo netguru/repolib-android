@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import co.netguru.repolibrx.sample.R
 import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
 import co.netguru.repolibrx.sample.feature.demo.di.UpdateViewModelFactory
 import dagger.android.support.DaggerAppCompatDialogFragment

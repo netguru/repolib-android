@@ -3,6 +3,7 @@ package co.netguru.repolibrx.sample.feature.demo
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import co.netguru.repolibrx.sample.R
 import co.netguru.repolibrx.sample.feature.demo.di.DemoViewModelFactory
 import co.netguru.repolibrx.sample.feature.edit.ItemUpdateDialogFragment
 import dagger.android.support.DaggerAppCompatActivity
