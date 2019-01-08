@@ -13,7 +13,7 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "co.netguru.patternlib.android"
+        applicationId "co.netguru.repolibrx.sample"
         minSdkVersion 18
         targetSdkVersion 28
         versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
@@ -160,9 +160,8 @@ dependencies {
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
-    testCompile test.archCompontentsUnitTests
+    testImplementation test.archCompontentsUnitTests
 
     //REPO LIB
     implementation project(path: ':repolib')
-
 }
