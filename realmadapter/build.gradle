@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion versions.compileSdk
 
     defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 28
-        versionCode isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
-        versionName '0.1.0'
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode globalVersionCode
+        versionName globalVersionName
         consumerProguardFiles 'proguard-rules.pro'
 
         libraryVariants.all {

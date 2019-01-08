@@ -13,7 +13,7 @@ ext {
     ankoVersion = '0.10.4'
 
     libs = [
-            kotlin                  : "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+            kotlin                  : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlinVersion",
             ankoCommons             : "org.jetbrains.anko:anko-commons:$ankoVersion",
             ankoCommonsSupportV7    : "org.jetbrains.anko:anko-appcompat-v7-commons:$ankoVersion",
             ankoCommonsSupportV4    : "org.jetbrains.anko:anko-support-v4-commons:$ankoVersion",
