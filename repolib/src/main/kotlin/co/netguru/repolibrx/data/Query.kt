@@ -4,6 +4,8 @@ interface Query
 
 object QueryAll : Query
 
+data class QueryById(val identifier: Long) : Query
+
 class QueryWithParams(vararg paramPairs: Pair<String, Any>) : Query {
 
     val params = mutableMapOf<String, Any>()

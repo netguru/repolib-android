@@ -2,9 +2,9 @@ package co.netguru.repolibrx.sample.feature.demo
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import co.netguru.repolibrx.realmadapter.RxRealmDataSource.Companion.UNDEFINED
 import co.netguru.repolibrx.sample.R
 import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
-import co.netguru.repolibrx.sample.feature.demo.data.UNDEFINED
 import io.reactivex.subjects.PublishSubject
 
 class DataAdapter : RecyclerView.Adapter<DataViewHolder>() {

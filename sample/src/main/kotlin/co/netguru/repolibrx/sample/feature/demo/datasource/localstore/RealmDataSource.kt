@@ -12,6 +12,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
 
+//todo replaced by the adapter - remove
 class RealmDataSource(private val realmConfiguration: RealmConfiguration) : DataSource<DemoDataEntity> {
 
     private val daoToEntityMapperDemo: (DataDao) -> DemoDataEntity = {

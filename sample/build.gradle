@@ -163,5 +163,7 @@ dependencies {
     testImplementation test.archCompontentsUnitTests
 
     //REPO LIB
+    //todo replace with repository link
     implementation project(path: ':repolib')
+    compile project(path: ':realmadapter')
 }
