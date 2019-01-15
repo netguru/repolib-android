@@ -3,6 +3,9 @@ package co.netguru.repolibrx.sample.feature.demo.di
 import co.netguru.repolibrx.RepoLibRx
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.initializer.createRepo
+import co.netguru.repolibrx.realmadapter.RealmDataMapper
+import co.netguru.repolibrx.realmadapter.RealmQueryMapper
+import co.netguru.repolibrx.realmadapter.RxRealmDataSource
 import co.netguru.repolibrx.sample.application.scope.AppScope
 import co.netguru.repolibrx.sample.common.LocalDataSourceQualifier
 import co.netguru.repolibrx.sample.common.RemoteDataSourceQualifier
@@ -10,7 +13,9 @@ import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
 import co.netguru.repolibrx.sample.feature.demo.datasource.DemoAppRequestStrategyFactoryFactory
 import co.netguru.repolibrx.sample.feature.demo.datasource.api.API
 import co.netguru.repolibrx.sample.feature.demo.datasource.api.RetrofitDataSource
-import co.netguru.repolibrx.sample.feature.demo.datasource.localstore.RealmDataSource
+import co.netguru.repolibrx.sample.feature.demo.datasource.localstore.DataDao
+import co.netguru.repolibrx.sample.feature.demo.datasource.localstore.DataMapper
+import co.netguru.repolibrx.sample.feature.demo.datasource.localstore.QueryMapper
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -64,9 +69,21 @@ class DataLayerModule {
     //RepoLib SETUP
     @AppScope
     @Provides
+    fun provideDataMapper(): RealmDataMapper<DemoDataEntity, DataDao> = DataMapper()
+
+    @AppScope
+    @Provides
+    fun provideQueryMapper(): RealmQueryMapper<DataDao> = QueryMapper()
+
+    @AppScope
+    @Provides
     @LocalDataSourceQualifier
+    //    todo refactor
     fun provideLocalDataSource(realmConfiguration: RealmConfiguration)
-            : DataSource<DemoDataEntity> = RealmDataSource(realmConfiguration)
+            : DataSource<DemoDataEntity> {
+
+        return RxRealmDataSource(realmConfiguration, DataMapper(), QueryMapper())
+    }
 
     @AppScope
     @Provides
