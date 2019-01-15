@@ -74,4 +74,12 @@ dependencies {
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
+
+    //Room
+    implementation libs.roomRuntime
+    kapt proc.roomCompiler
+    implementation libs.roomRxJava2
+
+    //todo replace
+    implementation project(path: ':repolib')
 }

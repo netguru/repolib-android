@@ -1,1 +1,1 @@
-include ':sample', ':repolib', ':realmadapter', ':retrofitadapter'
+include ':sample', ':repolib', ':realmadapter', ':roomadapter'

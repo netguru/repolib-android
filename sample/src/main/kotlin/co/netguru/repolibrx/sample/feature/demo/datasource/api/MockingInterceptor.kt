@@ -13,11 +13,11 @@ class MockingInterceptor(
 ) : Interceptor {
 
     private val remoteDataBaseMock: MutableList<DemoDataEntity> = arrayListOf(
-            DemoDataEntity(0, "remote note 0", SourceType.REMOTE),
             DemoDataEntity(1, "remote note 1", SourceType.REMOTE),
             DemoDataEntity(2, "remote note 2", SourceType.REMOTE),
             DemoDataEntity(3, "remote note 3", SourceType.REMOTE),
-            DemoDataEntity(4, "remote note 4", SourceType.REMOTE)
+            DemoDataEntity(4, "remote note 4", SourceType.REMOTE),
+            DemoDataEntity(5, "remote note 5", SourceType.REMOTE)
     )
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -42,7 +42,7 @@ class MockingInterceptor(
         request.url().toString().contains("/update") -> builder.code(200)
                 .body(ResponseBody.create(MediaType.parse("application/json"), updateElement(request)))
 
-        request.url().toString().contains("/delete") -> builder.code(200)
+        request.url().toString().contains("/sqlDelete") -> builder.code(200)
                 .body(ResponseBody.create(MediaType.parse("application/json"), deleteElement(request)))
 
         else -> builder.code(404)

@@ -14,7 +14,7 @@ import io.realm.RealmObject
 import io.realm.RealmResults
 
 
-class RxRealmDataSource<E : Identified, D : RealmObject>(
+open class RxRealmDataSource<E : Identified, D : RealmObject>(
         private val realmConfiguration: RealmConfiguration,
         private val dataMapper: RealmDataMapper<E, D>,
         private val queryMapper: RealmQueryMapper<D>
@@ -76,9 +76,5 @@ class RxRealmDataSource<E : Identified, D : RealmObject>(
         is QueryWithParams -> queryMapper.transform(requestQuery, realm).findAll()
         is QueryById -> queryMapper.transform(requestQuery, realm).findAll()
         else -> queryMapper.transform(requestQuery, realm).findAll()
-    }
-
-    companion object {
-        const val UNDEFINED: Long = -1
     }
 }

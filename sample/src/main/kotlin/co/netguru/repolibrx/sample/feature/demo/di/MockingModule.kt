@@ -10,11 +10,11 @@ import dagger.Provides
 import okhttp3.Interceptor
 
 @Module
-class MockingModule(val context: Context) {
+class MockingModule {
 
     @AppScope
     @Provides
-    fun provideConnectivityManager() = context
+    fun provideConnectivityManager(context: Context) = context
             .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     @AppScope

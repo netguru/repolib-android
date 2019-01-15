@@ -18,6 +18,7 @@ android {
         targetSdkVersion versions.targetSdk
         versionCode globalVersionCode
         versionName globalVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -88,6 +89,8 @@ dependencies {
     //Kotlin
     implementation libs.kotlin
 
+    implementation libs.multidex
+
     // Anko Commons
     implementation libs.ankoCommons
     implementation libs.ankoCommonsSupportV7
@@ -117,12 +120,6 @@ dependencies {
     implementation libs.lifeCycleExtensions
     implementation libs.viewModel
 
-    // MVP
-    implementation(libs.mosby) {
-        exclude module: 'appcompat-v7'
-        exclude module: 'support-annotations'
-    }
-
     // Dagger
     implementation libs.dagger
     implementation libs.daggerAndroid
@@ -148,13 +145,12 @@ dependencies {
     implementation libs.retrofitGsonConverter
     implementation libs.retrofitRxJava2Adapter
 
+    implementation libs.roomRuntime
+    kapt proc.roomCompiler
+    implementation libs.roomRxJava2
+
     // Timber
     implementation libs.timber
-
-    debugImplementation libs.stetho
-    debugImplementation libs.leakCanary
-    debugImplementation libs.blockCanary
-    debugImplementation libs.strictmodeNotifier
 
     // Unit testing
     testImplementation test.junit
@@ -165,5 +161,6 @@ dependencies {
     //REPO LIB
     //todo replace with repository link
     implementation project(path: ':repolib')
-    compile project(path: ':realmadapter')
+    implementation project(path: ':realmadapter')
+    implementation project(path: ':roomadapter')
 }

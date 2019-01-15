@@ -1,6 +1,7 @@
 package co.netguru.repolibrx.sample.application
 
-import co.netguru.repolibrx.sample.feature.demo.di.MockingModule
+import androidx.multidex.MultiDex
+import co.netguru.repolibrx.sample.feature.demo.di.ConfigurationModule
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 import io.realm.Realm
@@ -10,11 +11,12 @@ class App : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        MultiDex.install(this);
         Timber.plant(Timber.DebugTree())
         Realm.init(this)
     }
 
     override fun applicationInjector(): AndroidInjector<App> =
             DaggerApplicationComponent.builder()
-                    .mockingModule(MockingModule(this)).create(this)
+                    .configurationModule(ConfigurationModule(this)).create(this)
 }

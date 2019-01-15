@@ -7,7 +7,7 @@ import retrofit2.http.*
 
 interface API {
 
-    @DELETE("delete")
+    @DELETE("sqlDelete")
     fun delete(@Query("id") id: Long): Completable
 
     @GET("getAll")
