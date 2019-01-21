@@ -53,4 +53,8 @@ class RepoLib<T>(
         is Request.Delete<T> -> { dataSource -> dataSource.delete(request.query) }
         is Request.Fetch<T> -> { dataSource -> dataSource.fetch(request.query) }
     }
+
+    companion object {
+        const val UNDEFINED: Long = -1
+    }
 }

@@ -98,7 +98,7 @@ class MockingInterceptorTest {
         val idToRemove = 4.toLong()
         val getAllRequest = Request.Builder().url("http://example.com/getAll").build()
         val createRequest = Request.Builder()
-                .url("http://example.com/delete?id=$idToRemove")
+                .url("http://example.com/sqlDelete?id=$idToRemove")
                 .method(
                         "POST",
                         RequestBody.create(

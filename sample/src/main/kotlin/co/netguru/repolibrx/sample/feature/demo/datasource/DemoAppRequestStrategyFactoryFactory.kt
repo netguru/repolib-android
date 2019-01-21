@@ -7,7 +7,9 @@ import co.netguru.repolibrx.strategy.Strategy
 
 class DemoAppRequestStrategyFactoryFactory : RequestsStrategyFactory {
 
-    override fun <T> select(request: Request<T>): Strategy = when (request) {
+    override fun <T> select(request: Request<T>): Strategy
+//            = RequestStrategy.OnlyLocal
+            = when (request) {
         is Request.Create -> RequestStrategy.OnlyRemote
         is Request.Update -> RequestStrategy.OnlyRemote
         is Request.Delete -> RequestStrategy.OnlyRemote

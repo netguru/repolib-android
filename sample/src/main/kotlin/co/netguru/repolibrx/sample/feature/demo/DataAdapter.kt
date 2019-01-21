@@ -2,7 +2,7 @@ package co.netguru.repolibrx.sample.feature.demo
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import co.netguru.repolibrx.realmadapter.RxRealmDataSource.Companion.UNDEFINED
+import co.netguru.repolibrx.RepoLib.Companion.UNDEFINED
 import co.netguru.repolibrx.sample.R
 import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
 import io.reactivex.subjects.PublishSubject

@@ -3,7 +3,10 @@ package co.netguru.repolibrx.sample.common
 import javax.inject.Qualifier
 
 @Qualifier
-annotation class LocalDataSourceQualifier
+annotation class LocalRealmDataSourceQualifier
 
 @Qualifier
-annotation class RemoteDataSourceQualifier
+annotation class LocalRoomDataSourceQualifier
+
+@Qualifier
+annotation class RemoteRetrofitDataSourceQualifier

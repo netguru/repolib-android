@@ -6,12 +6,12 @@ import co.netguru.repolibrx.realmadapter.RealmQueryMapper
 import io.realm.Realm
 import io.realm.RealmQuery
 
-class QueryMapper(override val daoClass: Class<DataDao> = DataDao::class.java) : RealmQueryMapper<DataDao> {
+class QueryMapper(override val daoClass: Class<NoteLocalRealmObject> = NoteLocalRealmObject::class.java) : RealmQueryMapper<NoteLocalRealmObject> {
 
-    override fun transform(query: QueryById, realm: Realm): RealmQuery<DataDao> = realm
+    override fun transform(query: QueryById, realm: Realm): RealmQuery<NoteLocalRealmObject> = realm
             .where(daoClass).equalTo("id", query.identifier)
 
-    override fun transform(query: QueryWithParams, realm: Realm): RealmQuery<DataDao> {
+    override fun transform(query: QueryWithParams, realm: Realm): RealmQuery<NoteLocalRealmObject> {
         val realmQuery = realm.where(daoClass)
         val idKey = "id"
         val valueKey = "value"
