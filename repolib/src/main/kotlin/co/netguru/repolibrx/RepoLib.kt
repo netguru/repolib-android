@@ -4,13 +4,23 @@ import co.netguru.repolibrx.data.Query
 import co.netguru.repolibrx.data.Request
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.strategy.RequestsStrategyFactory
+import co.netguru.repolibrx.strategy.Strategy
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
-
+/**
+ * [RepoLib] class is the **main controller** for managing DataSources synchronization.
+ * Event synchronization is performed according to the [Strategy] produced by the [RequestsStrategyFactory].
+ * [RequestsStrategyFactory] should be implemented manually by the developer according to the project requirements.
+ *
+ * @param localDataSource [DataSource] object that will be treated as local by the [Strategy]
+ * @param remoteDataSource [DataSource] object that will be treated as remote by the [Strategy]
+ * @param requestsStrategyFactory is an object of [RequestsStrategyFactory] that is used by the [RepoLib]
+ * to retrieve [Strategy] for specific requests
+ */
 class RepoLib<T>(
         private val localDataSource: DataSource<T>,
         private val remoteDataSource: DataSource<T>,
@@ -22,14 +32,6 @@ class RepoLib<T>(
     override fun outputDataStream(): Flowable<T> = dataOutputBehaviourSubject
             .toFlowable(BackpressureStrategy.LATEST)
 
-    /**
-     * Output stream that is responsible for transmitting data from the data sources.
-     * Data emission is triggered by the input event sent using one of the input methods
-     * e.g. [fetch].
-     * [<br><br>]
-     * Source for the data emission is selected by the RequestsStrategyFactory object
-     *
-     */
     override fun fetch(query: Query): Completable = handleRequest(Request.Fetch(query))
 
     override fun create(entity: T): Completable = handleRequest(Request.Create(entity))
@@ -55,6 +57,9 @@ class RepoLib<T>(
     }
 
     companion object {
+        /**
+         * Value that can be used to set undefined id as data entity ID
+         */
         const val UNDEFINED: Long = -1
     }
 }
