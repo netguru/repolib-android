@@ -53,8 +53,8 @@ class IntegrationTests {
     }
 
     private val repoLib = createRepo<TestDataEntity> {
-        localDataSourceController = localDataSourceMock
-        remoteDataSourceController = remoteDataSourceMock
+        localDataSource = localDataSourceMock
+        remoteDataSource = remoteDataSourceMock
     }
 
     /**

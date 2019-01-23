@@ -35,8 +35,8 @@ class DataLayerModule {
             @RemoteRetrofitDataSourceQualifier remoteDemoDataSource: DataSource<DemoDataEntity>,
             demoAppRequestStrategyFactory: DemoAppRequestStrategyFactoryFactory
     ): RepoLibRx<DemoDataEntity> = createRepo {
-        localDataSourceController = localDemoDataSource
-        remoteDataSourceController = remoteDemoDataSource
+        localDataSource = localDemoDataSource
+        remoteDataSource = remoteDemoDataSource
         requestsStrategyFactory = demoAppRequestStrategyFactory
     }
 }
