@@ -61,8 +61,8 @@ interface DataSource<E> {
      * [<br/><br/>]
      * @param query that contains constraints that defines what object should be deleted in DataSource.
      * [<br/><br/>]
-     * @return [Observable] of type [E] that holding events with already updated entity. Returning of the
-     * updated entity is optional, but it is recommended to at least publish Complete event,
+     * @return [Observable] of type [E] that holding events with already deleted entity. Returning of the
+     * deleted entity is optional, but it is recommended to at least publish Complete event,
      * to allow request strategies to be completed. Any kind of data published using this
      * [Observable] will be emitted using [RepoLibRx.outputDataStream]
      */
@@ -77,14 +77,12 @@ interface DataSource<E> {
      * wrapped in requests are passed without any interference or modification.
      *
      * [<br/><br/>]
-     * @param query that contains constraints that defines what object should be deleted in DataSource.
+     * @param query that contains constraints that defines what objects should be fetched from DataSource.
      * All constraints (params and its values) included under [Query] abstraction should be resolved
      * manually for each [DataSource] implementation.
      * [<br/><br/>]
-     * @return [Observable] of type [E] that holding events with already deleted entity. Returning of the
-     * updated entity is optional, but it is recommended to at least publish Complete event,
-     * to allow request strategies to be completed. Any kind of data published using this
-     * [Observable] will be emitted using [RepoLibRx.outputDataStream]
+     * @return [Observable] of type [E] that holding events with fetched entities. Any kind of data
+     * published using this[Observable] will be emitted using [RepoLibRx.outputDataStream]
      */
     fun fetch(query: Query): Observable<E>
 }
