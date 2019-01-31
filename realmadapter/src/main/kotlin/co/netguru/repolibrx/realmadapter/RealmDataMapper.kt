@@ -26,8 +26,9 @@ interface RealmDataMapper<E, D : RealmObject> {
     fun transformToEntity(): (D) -> E
 
     /**
-     * [rewriteValuesToDao] function is responsible to move data from existing [entity] model of type
-     * [E] to *existing* but empty [RealmObject] [emptyDaoObject] of type D.
+     * [rewriteValuesToDao] function function is responsible for moving data from existing [entity] model of type
+     * [E] to *existing* [RealmObject] [emptyDaoObject] of type D. If model of type [E] contains some data
+     * the library will overwrite it.
      * [<br/><br/>]
      * [rewriteValuesToDao] is used in reverse to [transformToEntity] but is using already created
      * [RealmObject] object. The reason of such approach is that [Realm] requires to create object

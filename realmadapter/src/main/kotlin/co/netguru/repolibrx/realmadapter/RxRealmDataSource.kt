@@ -15,13 +15,13 @@ import io.realm.*
 
 /**
  * [RxRealmDataSource] is an implementation of the [DataSource] interface for [RepoLib] based on
- * [Realm] storage. The main goal of this adapter is to make implementation of the data layer using
- * [RepoLib] as easy as possible the application as easy as possible. [RxRealmDataSource] contains
+ * [Realm] storage. The main goal of this adapter is to make implementation of the data layer
+ * for the applications using [RepoLib] as easy as possible. [RxRealmDataSource] contains
  * logic responsible for all operations required by [DataSource] interface like [create], [update],
  * [delete] and [fetch].
  *
  * [<br/><br/>]
- * To fully implement data operations it required to implement two mappers to
+ * To fully implement data operations it is required to implement two mappers to
  * show the [RxRealmDataSource] how to map data entities and how to resolve [Query] objects.
  *
  * [<br/><br/>]
@@ -37,10 +37,10 @@ import io.realm.*
  * should be initiated before initialization of the [RepoLib] and [RxRealmDataSource].
  *
  * @param dataMapper is an object that represents [RealmDataMapper] implementation.
- * The [RealmDataMapper] is responsible transforming data from entity data model [E] to [RealmObject]
+ * The [RealmDataMapper] is responsible for transforming data from entity data model [E] to [RealmObject]
  * represented by the generic type [E] and reverse.
  * @param queryMapper is an object that represents [RealmQueryMapper] implementation.
- * The [RealmDataMapper] is representing for translating [Query] objects to Realm specific queries.
+ * The [RealmDataMapper] is responsible for translating [Query] objects to Realm specific queries.
  */
 open class RxRealmDataSource<E : Identified, D : RealmObject>(
         private val realmConfiguration: RealmConfiguration,
