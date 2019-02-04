@@ -7,6 +7,18 @@ import com.google.gson.Gson
 import okhttp3.*
 import okio.Buffer
 
+/**
+ * [MockingInterceptor] is an implementation of the [Interceptor] interface used by the [OkHttpClient]
+ * to intercept all HTTP requests. [MockingInterceptor] is responsible to mock REST API behaviour
+ * and its responses. This interceptor was created to illustrate communication with typical REST
+ * web service.
+ *
+ * @param gson instance of [Gson] converter used to translate JSON body to data models and reverse
+ * @param connectivityManager is an instance of system service called [ConnectivityManager]. It is
+ * used to symulate the network errors. Eg. if the user will enable airplane mode in the device
+ * that Sample app is running, the Mocking Interceptor will return to [OkHttpClient] typical errors
+ * that will appear when REST web service is unreachable.
+ */
 class MockingInterceptor(
         private val gson: Gson,
         private val connectivityManager: ConnectivityManager

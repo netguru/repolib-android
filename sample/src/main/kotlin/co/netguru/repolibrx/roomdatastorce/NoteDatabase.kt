@@ -1,10 +1,13 @@
 package co.netguru.repolibrx.roomdatastorce
 
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import co.netguru.repolibrx.roomdatastorce.NoteDatabase.Companion.DB_VERSION
 
-
+/**
+ * Definition of the [Room] database. For more information check [Room] documentation.
+ */
 @Database(entities = [Note::class], version = DB_VERSION)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteLocalDao

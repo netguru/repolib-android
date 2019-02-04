@@ -4,9 +4,18 @@ import co.netguru.repolibrx.data.Query
 import co.netguru.repolibrx.data.QueryWithParams
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
+import co.netguru.repolibrx.sample.feature.demo.di.datasources.RetrofitModule
 import io.reactivex.Observable
+import retrofit2.Retrofit
 
-//todo add JavaDoc description about model mapping
+/**
+ * [RetrofitDataSource] is example implementation of the remote [DataSource] based on [Retrofit]
+ * framework. It contains logic of mapping data entities or queries to the data required by the
+ * REST API interface.
+ *
+ * @param api example of REST API interface created  by the [Retrofit]. Initialization of this
+ * interface and whole Retrofit is placed in the [RetrofitModule].
+ */
 class RetrofitDataSource(private val api: API) : DataSource<DemoDataEntity> {
 
     override fun create(entity: DemoDataEntity): Observable<DemoDataEntity> = api.create(entity)
