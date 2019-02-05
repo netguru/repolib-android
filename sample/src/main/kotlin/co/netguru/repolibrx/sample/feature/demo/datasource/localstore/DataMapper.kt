@@ -2,12 +2,19 @@ package co.netguru.repolibrx.sample.feature.demo.datasource.localstore
 
 import co.netguru.repolibrx.RepoLib.Companion.UNDEFINED
 import co.netguru.repolibrx.realmadapter.RealmDataMapper
+import co.netguru.repolibrx.realmadapter.RxRealmDataSource
 import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
 import co.netguru.repolibrx.sample.feature.demo.data.SourceType
+import io.realm.RealmObject
 
-
+/**
+ * [DataMapper] is an example implementation of the [RealmDataMapper] that is used by
+ * [RxRealmDataSource] to translate data entity model to the [RealmObject]. In this case
+ * from [DemoDataEntity] model to [NoteLocalRealmObject] model and reverse.
+ *
+ * This class also contains example of simple logic responsible for managing the data ids.
+ */
 class DataMapper : RealmDataMapper<DemoDataEntity, NoteLocalRealmObject> {
-    //    todo implement common solution
     private var highestId = UNDEFINED
 
     override fun transformToEntity(): (NoteLocalRealmObject) -> DemoDataEntity = { dao ->

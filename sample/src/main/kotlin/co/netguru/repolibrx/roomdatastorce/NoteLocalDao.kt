@@ -6,8 +6,14 @@ import androidx.room.RawQuery
 import androidx.room.Update
 import androidx.sqlite.db.SupportSQLiteQuery
 import co.netguru.repolibrx.roomadapter.BaseDao
+import co.netguru.repolibrx.roomadapter.RxRoomDataSource
 import io.reactivex.Single
 
+/**
+ * Example implementation of the Dao interface that is used by the [RxRoomDataSource].
+ * To make such specific Dao class compatible with the [RxRoomDataSource] its need to extend
+ * [BaseDao] interface.
+ */
 @Dao
 interface NoteLocalDao : BaseDao<Note> {
 

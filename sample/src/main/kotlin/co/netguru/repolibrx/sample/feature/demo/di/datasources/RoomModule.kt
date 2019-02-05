@@ -2,6 +2,8 @@ package co.netguru.repolibrx.sample.feature.demo.di.datasources
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import co.netguru.repolibrx.RepoLib
 import co.netguru.repolibrx.datasource.DataSource
 import co.netguru.repolibrx.roomadapter.RxRoomDataSource
 import co.netguru.repolibrx.roomadapter.mappers.RoomDataMapper
@@ -16,18 +18,37 @@ import co.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
 import dagger.Module
 import dagger.Provides
 
+/**
+ * [RoomModule] is an Dagger module responsible for initialization of [RxRoomDataSource] and
+ * all dependencies that [RxRoomDataSource] and [Room] need.
+ *
+ * This is just an example module - it is not used in this Sample app - but it allows to illustrate
+ * how to initialize [RxRoomDataSource] using Dagger DI engine.
+ */
 @Module
 class RoomModule {
-    //todo describe room init
 
+    /**
+     * [provideQueryMapper] provides implementation of the [RoomQueryMapper] that is used by the
+     * [RxRoomDataSource] to translate queries to SQL queries required by the [Room] storage.
+     */
     @AppScope
     @Provides
     fun provideQueryMapper(): RoomQueryMapper = NotesQueryMapper()
 
+    /**
+     * [provideDataMapper] provides implementation of [RoomDataMapper] interface that is used by
+     * [RxRoomDataSource] to translate data entity model to Room data models.
+     */
     @AppScope
     @Provides
     fun provideDataMapper(): RoomDataMapper<DemoDataEntity, Note> = NotesDataMapper()
 
+    /**
+     * [provideNoteDataBase] provides ready to use instance of [Room] database. The database is initialized
+     * according to the [Room] documentation using [RoomDatabase.Builder]
+     * [https://developer.android.com/reference/android/arch/persistence/room/RoomDatabase.Builder]
+     */
     @AppScope
     @Provides
     fun provideNoteDataBase(context: Context): NoteDatabase = Room.databaseBuilder(
@@ -38,6 +59,20 @@ class RoomModule {
             .enableMultiInstanceInvalidation()
             .build()
 
+    /**
+     * [provideRoomDataSource] is responsible for providing [RxRoomDataSource] as a implementation
+     * of [DataSource]. [RxRoomDataSource] is an ready to use implementation of the [DataSource]
+     * that contains implementation of basic operation on [Room] storage to reduce boiler plate code
+     * that developer need to write to fully implement [DataSource]. [RxRoomDataSource] also requires
+     * to pass name of the SQL table, same name that was passed to [Room.databaseBuilder] in
+     * [provideNoteDataBase] method.
+     *
+     * @param noteDatabase example of [RoomDatabase] provided by the [provideNoteDataBase] method
+     * @param roomDataMapper instance of [RoomQueryMapper] used by the [RxRoomDataSource] to translate
+     * [RepoLib] queries to SQL queries required by the [Room] storage.
+     * @param roomDataMapper instance of [RoomDataMapper] used to translate data entity model
+     * to Room data models.
+     */
     @AppScope
     @Provides
     @LocalRoomDataSourceQualifier
