@@ -1,10 +1,10 @@
 ext {
     bintrayRepo = 'maven'
 
-    bintrayName = 'Realm Adapter for RepoLibRx'
+    bintrayName = 'RepoLibRealmAdapter'
     artifact = 'realmadapter'
     artifactGroupName = 'repolibrx'
-    packageName = 'com.netguru.repolibrx.realmadapter'
+    packageName = 'com.netguru'
     libraryVersion = android.defaultConfig.versionName 
     publishedGroupId = "$packageName.$artifactGroupName"
     libraryName = 'Realm Adapter for RepoLibRx'

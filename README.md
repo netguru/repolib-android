@@ -81,7 +81,7 @@ implement data sources.
 To use this library in your project, add Netguru maven urls to the repositories block:
 ```
 repositories {
-    todo
+    compile 'com.netguru.repolibrx.roomadapter.repolibrx:roomadapter:0.8'
 }
 ```
 

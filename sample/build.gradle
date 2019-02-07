@@ -49,7 +49,7 @@ android {
     }
 
     junitJacoco {
-        jacocoVersion='0.8.2'
+        jacocoVersion = '0.8.2'
         excludes = ['android/databinding/**/*.class',
                     '**/android/databinding/*Binding.class',
                     '**/BR.*',
@@ -158,8 +158,8 @@ dependencies {
     testImplementation test.archCompontentsUnitTests
 
     //REPO LIB
-    //todo replace with repository link
-    implementation project(path: ':repolib')
-    implementation project(path: ':realmadapter')
-    implementation project(path: ':roomadapter')
+    implementation 'com.netguru.repolibrx:repolibrx:0.8'
+    implementation 'com.netguru.repolibrx:realmadapter:0.8'
+    implementation 'com.netguru.repolibrx:roomadapter:0.8'
+
 }

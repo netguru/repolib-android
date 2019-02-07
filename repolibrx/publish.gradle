@@ -1,10 +1,10 @@
 ext {
     bintrayRepo = 'maven'
 
-    bintrayName = 'RepoLib Rx'
+    bintrayName = 'RepoLibRx'
     artifact = 'repolibrx'
     artifactGroupName = 'repolibrx'
-    packageName = 'com.netguru.repolibrx'
+    packageName = 'com.netguru'
     libraryVersion = android.defaultConfig.versionName 
     publishedGroupId = "$packageName.$artifactGroupName"
     libraryName = 'RepoLib Rx'

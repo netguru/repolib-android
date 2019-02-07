@@ -29,7 +29,7 @@ ext {
             viewModel               : "androidx.lifecycle:lifecycle-viewmodel:$lifeCycleVersion",
             lifeCycleExtensions     : "androidx.lifecycle:lifecycle-extensions:$lifeCycleVersion",
             rxJava2                 : "io.reactivex.rxjava2:rxjava:2.2.0",
-            rxKotlin2               : "io.reactivex.rxjava2:rxkotlin:2.2.0",
+            rxKotlin2               : "io.reactivex.rxjava2:rxkotlin:2.3.0",
             rxAndroid2              : "io.reactivex.rxjava2:rxandroid:2.0.2",
             dagger                  : "com.google.dagger:dagger:$daggerVersion",
             daggerAndroid           : "com.google.dagger:dagger-android:$daggerVersion",

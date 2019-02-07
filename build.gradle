@@ -23,11 +23,12 @@ buildscript {
         mavenLocal()
         google()
         maven { url "https://plugins.gradle.org/m2/" }
+        maven {  url 'https://dl.bintray.com/netguru/maven/' }
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
         classpath "com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.6"
         classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.11.0'
@@ -46,7 +47,13 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url "https://clojars.org/repo/" }
         maven { url "https://maven.fabric.io/public" }
+        maven {  url 'https://dl.bintray.com/netguru/maven/' }
         jcenter()
+    }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
     }
 }
 

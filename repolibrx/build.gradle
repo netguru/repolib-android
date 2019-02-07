@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.vanniktech.android.junit.jacoco'
 
+
 android {
     compileSdkVersion versions.compileSdk
 
@@ -54,24 +55,24 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.kotlin
+    api libs.kotlin
 
     //Rx
-    implementation libs.rxJava2
-    implementation (libs.rxKotlin2)  {
+    api libs.rxJava2
+    api (libs.rxKotlin2)  {
         exclude module: 'rxjava'
         exclude module: 'kotlin-stdlib'
     }
-    implementation(libs.rxAndroid2) {
+    api(libs.rxAndroid2) {
         exclude module: 'rxjava'
     }
-
-    implementation libs.timber
 
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
 }
+
+apply from: 'publish.gradle'

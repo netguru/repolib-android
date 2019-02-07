@@ -9,11 +9,13 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
+    excludes = ['**/*.kt']
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
+    excludes = ['**/*.kt']
     from javadoc.destinationDir
 }
 artifacts {
