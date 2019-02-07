@@ -4,7 +4,7 @@ apply from: 'buildsystem/bitrise.gradle'
 
 ext {
     globalVersionCode = isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
-    globalVersionName = '0.8-beta'
+    globalVersionName = '0.8'
 }
 
 buildscript {
@@ -27,13 +27,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
         classpath "com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.6"
         classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.11.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.18.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinVersion"
         classpath "io.realm:realm-gradle-plugin:$versions.realmVersion"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 

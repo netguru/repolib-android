@@ -1,0 +1,32 @@
+ext {
+    bintrayRepo = 'maven'
+
+    bintrayName = 'Realm Adapter for RepoLibRx'
+    artifact = 'realmadapter'
+    artifactGroupName = 'repolibrx'
+    packageName = 'com.netguru.repolibrx.realmadapter'
+    libraryVersion = android.defaultConfig.versionName 
+    publishedGroupId = "$packageName.$artifactGroupName"
+    libraryName = 'Realm Adapter for RepoLibRx'
+    libraryDescription = 'Realm Adapter for RepoLib contains implementation of the DataSources for RepoLibRx based on Realm storage. \n' +
+            'The module includes implementation of the DataSource interface based on Realm database. It contains implementation\n' +
+            'of all basic operation required by the interface like *create*, *update*, *delete* and *fetch*.'
+
+    // repo
+    siteUrl = 'https://github.com/netguru/repolib-android'
+    gitUrl = 'https://github.com/netguru/repolib-android'
+
+    // leave
+    developerId = 'netguru'
+    developerName = 'netguru'
+    developerEmail = 'android@netguru.pl'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'
+
+println "\nuploading '$publishedGroupId:$artifact:$libraryVersion' ...\n"
