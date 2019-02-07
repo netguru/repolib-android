@@ -12,7 +12,7 @@ android {
     buildToolsVersion versions.toolsVersion
 
     defaultConfig {
-        applicationId "co.netguru.repolibrx.sample"
+        applicationId "com.netguru.repolibrx.sample"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
         versionCode globalVersionCode
