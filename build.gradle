@@ -1,10 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply from: 'buildsystem/dependencies.gradle'
 apply from: 'buildsystem/bitrise.gradle'
+apply from: rootProject.file("buildsystem/secrets.gradle")
 
 ext {
     globalVersionCode = isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
-    globalVersionName = '0.8'
+    globalVersionName = '0.5'
 }
 
 buildscript {
@@ -56,6 +57,7 @@ allprojects {
         options.addStringOption('encoding', 'UTF-8')
     }
 }
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

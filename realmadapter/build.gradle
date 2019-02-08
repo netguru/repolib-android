@@ -76,7 +76,7 @@ dependencies {
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
 
-    implementation 'com.netguru.repolibrx:repolibrx:0.8'
+    api 'com.netguru.repolibrx:repolibrx:0.5'
 }
 
 apply from: 'publish.gradle'

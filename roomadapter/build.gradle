@@ -80,7 +80,7 @@ dependencies {
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
 
-    api project(path: ':repolibrx')
+    api 'com.netguru.repolibrx:repolibrx:0.5'
 }
 
 apply from: 'publish.gradle'

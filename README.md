@@ -81,8 +81,16 @@ implement data sources.
 To use this library in your project, add Netguru maven urls to the repositories block:
 ```
 repositories {
-    compile 'com.netguru.repolibrx.roomadapter.repolibrx:roomadapter:0.8'
+    maven {  url 'https://dl.bintray.com/netguru/maven/' }
 }
+```
+
+Then add following dependencies to the app module build.gradle:
+```
+dependencies {
+   implementation 'com.netguru.repolibrx:repolibrx:0.5'
+}
+
 ```
 
 ### Data Source adapters
@@ -90,16 +98,19 @@ You can also use one of our adapters for Realm or Room.
 
 
 #### Room DataSource (optional)
- To download Room adapter, add Netguru maven urls to the repositories block:
+To download Room adapter, add following dependencies to the dependency block in your 
+app's module build.gradle file:
 ```
-todo
+implementation 'com.netguru.repolibrx:roomadapter:0.5'
 ```
+
 For more information check readme file for [Room adapter module](https://github.com/netguru/repolib-android/tree/master/roomadapter)
 
 #### Realm DataSource (optional)
-To download Realm data source adapter add Netguru maven urls to the repositories block:
+To download Realm data source adapter add following dependencies to the dependency block in your 
+app's module build.gradle file:
 ```
-todo
+implementation 'com.netguru.repolibrx:realmadapter:0.5'
 ```
 For more information check readme file for [Realm adapter module](https://github.com/netguru/repolib-android/tree/master/realmadapter)
 
