@@ -8,7 +8,17 @@ of all basic operation required by the interface like *create*, *update*, *delet
 To use this module with RepoLibRx in your project, add Netguru maven urls to the repositories block:
 
 ```
-TBD
+repositories {
+    maven {  url 'https://dl.bintray.com/netguru/maven/' }
+}
+```
+
+Then add following dependencies to the app module build.gradle:
+```
+dependencies {
+   implementation 'com.netguru.repolibrx:roomadapter:0.5'
+}
+
 ```
 
 ## Usage

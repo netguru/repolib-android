@@ -1,10 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply from: 'buildsystem/dependencies.gradle'
 apply from: 'buildsystem/bitrise.gradle'
+apply from: rootProject.file("buildsystem/secrets.gradle")
 
 ext {
     globalVersionCode = isBitrise ? Integer.parseInt(bitrise.io.buildNumber) : 1
-    globalVersionName = '0.8-beta'
+    globalVersionName = '0.5'
 }
 
 buildscript {
@@ -23,6 +24,7 @@ buildscript {
         mavenLocal()
         google()
         maven { url "https://plugins.gradle.org/m2/" }
+        maven {  url 'https://dl.bintray.com/netguru/maven/' }
         jcenter()
     }
 
@@ -34,6 +36,8 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.18.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinVersion"
         classpath "io.realm:realm-gradle-plugin:$versions.realmVersion"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
@@ -44,9 +48,16 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url "https://clojars.org/repo/" }
         maven { url "https://maven.fabric.io/public" }
+        maven {  url 'https://dl.bintray.com/netguru/maven/' }
         jcenter()
     }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
+    }
 }
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

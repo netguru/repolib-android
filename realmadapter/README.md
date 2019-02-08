@@ -5,10 +5,20 @@ The module includes implementation of the DataSource interface based on Realm da
 of all basic operation required by the interface like *create*, *update*, *delete* and *fetch*.
 
 ## Download
-To use this module with RepoLibRx in your project, add Netguru maven urls to the repositories block:
-
+To use this module with RepoLibRx in your project, add Netguru maven urls to the repositories blocks
+to the build.gradle in your project root dir:
 ```
-TBD
+repositories {
+    maven {  url 'https://dl.bintray.com/netguru/maven/' }
+}
+```
+
+Then add following dependencies to the app module build.gradle:
+```
+dependencies {
+   implementation 'com.netguru.repolibrx:realmadapter:0.5'
+}
+
 ```
 
 ## Usage

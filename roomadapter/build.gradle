@@ -59,27 +59,28 @@ dependencies {
     implementation libs.kotlin
 
     //Rx
-    implementation libs.rxJava2
-    implementation (libs.rxKotlin2)  {
+    api libs.rxJava2
+    api (libs.rxKotlin2)  {
         exclude module: 'rxjava'
         exclude module: 'kotlin-stdlib'
     }
-    implementation(libs.rxAndroid2) {
+    api(libs.rxAndroid2) {
         exclude module: 'rxjava'
     }
 
-    implementation libs.timber
+    api libs.timber
+
+    //Room
+    api libs.roomRuntime
+    kapt proc.roomCompiler
+    api libs.roomRxJava2
 
     // Unit testing
     testImplementation test.junit
     testImplementation test.mockito
     testImplementation test.mockitoKotlin
 
-    //Room
-    implementation libs.roomRuntime
-    kapt proc.roomCompiler
-    implementation libs.roomRxJava2
-
-    //todo replace
-    implementation project(path: ':repolib')
+    api 'com.netguru.repolibrx:repolibrx:0.5'
 }
+
+apply from: 'publish.gradle'

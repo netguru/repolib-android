@@ -39,7 +39,7 @@
 }
 
 # Models!
--keepclassmembernames class co.netguru.repolib.data.**.model.** { *; }
+-keepclassmembernames class com.netguru.repolib.data.**.model.** { *; }
 
 # app compat-v7
 -keep class android.support.v7.widget.SearchView { *; }
