@@ -44,7 +44,7 @@ open class NoteLocalRealmObject : RealmObject() {
 3. Create implementation of `RealmQueryMapper` interface. The interface is responsible for translating 
 RepoLib Query objects to `RealmQuery` objects required by the Realm storage. Query Mapper should 
 include the property that holding the `Class` of the `RealmObject` created in step 2.  Below you can 
-find [example](https://github.com/netguru/repolib-android/blob/task/RPI-18/sample/src/main/kotlin/co/netguru/repolibrx/sample/feature/demo/datasource/localstore/QueryMapper.kt) 
+find [example](https://github.com/netguru/repolib-android/blob/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/localstore/QueryMapper.kt) 
 of such implementation:
 ```
 class QueryMapper(override val daoClass: Class<NoteLocalRealmObject> = NoteLocalRealmObject::class.java)
@@ -66,7 +66,7 @@ class QueryMapper(override val daoClass: Class<NoteLocalRealmObject> = NoteLocal
 
 4. Create implementation of `RealmDataMapper` interface, that will be responsible for translating 
 data models from RepoLib data model entity to `Realm` specific model that extends `RealmObject` 
-created in 1. Below you can find [example](https://github.com/netguru/repolib-android/blob/task/RPI-18/sample/src/main/kotlin/co/netguru/repolibrx/sample/feature/demo/datasource/localstore/DataMapper.kt) 
+created in 1. Below you can find [example](https://github.com/netguru/repolib-android/blob/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/localstore/DataMapper.kt) 
 of such implementation:
 ```
 class DataMapper : RealmDataMapper<DemoDataEntity, NoteLocalRealmObject> {

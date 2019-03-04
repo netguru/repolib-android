@@ -1,4 +1,4 @@
-package com.netguru.repolibrx.roomdatastorce
+package com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -63,7 +63,7 @@ The library also supports data synchronization accordingly to the implemented Re
 
 All of the mentioned strategies describes the order of in which requests will be sent to the data 
 sources. More information about can be found in KDoc
- [here](https://github.com/netguru/repolib-android/blob/master/repolib/src/main/kotlin/co/netguru/repolibrx/strategy/RequestStrategy.kt)
+ [here](https://github.com/netguru/repolib-android/blob/master/repolibrx/src/main/kotlin/com/netguru/repolibrx/strategy/RequestStrategy.kt)
 
 ### Additional adapters
 Such implementation of data sources can be very boring and repeatable. To make especially in cases
@@ -138,7 +138,7 @@ class DemoAppRequestStrategyFactoryFactory : RequestsStrategyFactory {
         }
  }
  ```
-  * or you can skip this and use **[default](https://github.com/netguru/repolib-android/blob/master/repolib/src/main/kotlin/co/netguru/repolibrx/strategy/DefaultRequestsStrategyFactory.kt)**
+  * or you can skip this and use **[default](https://github.com/netguru/repolib-android/blob/master/repolibrx/src/main/kotlin/com/netguru/repolibrx/strategy/DefaultRequestsStrategyFactory.kt)**
    RequestsStrategyFactory already implemented in RepoLib module.
 
 
