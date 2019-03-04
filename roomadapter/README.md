@@ -27,7 +27,7 @@ Follow this steps to setup adapter and create working DataSource interface imple
 1. Initialize Room accordingly to its [documentation](https://developer.android.com/training/data-storage/room/defining-data)
 2. Create implementation of `RoomQueryMapper` interface. The interface is responsible for translating
  RepoLib Query objects to SQL queries required by the ROOM. Below you can find 
- [example](https://github.com/netguru/repolib-android/blob/54d5ef2cce178bb7b77726d79c317d5309a49874/sample/src/main/kotlin/co/netguru/repolibrx/roomdatastorce/NotesQueryMapper.kt)
+ [example](https://github.com/netguru/repolib-android/blob/task/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/roomdatastorce/NotesQueryMapper.kt)
   of such implementation:
 
 ```
@@ -41,7 +41,7 @@ class NotesQueryMapper : RoomQueryMapper {
 
 3. Create implementation of `RoomDataMapper` interface, that will be responsible for translating 
 data models from RepoLib data model entity to Room specific model created in 1. Below you can 
-find [example](https://github.com/netguru/repolib-android/blob/54d5ef2cce178bb7b77726d79c317d5309a49874/sample/src/main/kotlin/co/netguru/repolibrx/roomdatastorce/NotesDataMapper.kt) 
+find [example](https://github.com/netguru/repolib-android/blob/task/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/roomdatastorce/NotesDataMapper.kt) 
 of such implementation:
 
 ```

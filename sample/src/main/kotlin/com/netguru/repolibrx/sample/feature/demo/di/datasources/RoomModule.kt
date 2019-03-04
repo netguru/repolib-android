@@ -8,13 +8,13 @@ import com.netguru.repolibrx.datasource.DataSource
 import com.netguru.repolibrx.roomadapter.RxRoomDataSource
 import com.netguru.repolibrx.roomadapter.mappers.RoomDataMapper
 import com.netguru.repolibrx.roomadapter.mappers.RoomQueryMapper
-import com.netguru.repolibrx.roomdatastorce.Note
-import com.netguru.repolibrx.roomdatastorce.NoteDatabase
-import com.netguru.repolibrx.roomdatastorce.NotesDataMapper
-import com.netguru.repolibrx.roomdatastorce.NotesQueryMapper
 import com.netguru.repolibrx.sample.application.scope.AppScope
 import com.netguru.repolibrx.sample.common.LocalRoomDataSourceQualifier
 import com.netguru.repolibrx.sample.feature.demo.data.DemoDataEntity
+import com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce.Note
+import com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce.NoteDatabase
+import com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce.NotesDataMapper
+import com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce.NotesQueryMapper
 import dagger.Module
 import dagger.Provides
 

@@ -1,9 +1,9 @@
-package com.netguru.repolibrx.roomdatastorce
+package com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce
 
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.netguru.repolibrx.roomdatastorce.NoteDatabase.Companion.DB_VERSION
+import com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce.NoteDatabase.Companion.DB_VERSION
 
 /**
  * Definition of the [Room] database. For more information check [Room] documentation.

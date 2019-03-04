@@ -1,4 +1,4 @@
-package com.netguru.repolibrx.roomdatastorce
+package com.netguru.repolibrx.sample.feature.demo.datasource.roomdatastorce
 
 import com.netguru.repolibrx.RepoLib
 import com.netguru.repolibrx.roomadapter.RxRoomDataSource
