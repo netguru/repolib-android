@@ -7,14 +7,14 @@ of all basic operation required by the interface like *create*, *update*, *delet
 ## Download
 To use this module with RepoLibRx in your project, add Netguru maven urls to the repositories block:
 
-```
+```gradle
 repositories {
     maven {  url 'https://dl.bintray.com/netguru/maven/' }
 }
 ```
 
 Then add following dependencies to the app module build.gradle:
-```
+```gradle
 dependencies {
    implementation 'com.netguru.repolibrx:roomadapter:0.5'
 }
@@ -30,7 +30,7 @@ Follow this steps to setup adapter and create working DataSource interface imple
  [example](https://github.com/netguru/repolib-android/blob/task/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/roomdatastorce/NotesQueryMapper.kt)
   of such implementation:
 
-```
+```kotlin
 class NotesQueryMapper : RoomQueryMapper {
     override fun transformQueryByIdToStringPredicate(query: QueryById) = "id=${query.identifier}"
     override fun transformQueryAllToStringPredicate(query: QueryAll) = ""
@@ -44,7 +44,7 @@ data models from RepoLib data model entity to Room specific model created in 1. 
 find [example](https://github.com/netguru/repolib-android/blob/task/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/roomdatastorce/NotesDataMapper.kt) 
 of such implementation:
 
-```
+```kotlin
 class NotesDataMapper : RoomDataMapper<DemoDataEntity, Note> {
 
     override fun transformEntityToDaoModel(): (DemoDataEntity) -> Note = { entity ->
@@ -63,7 +63,7 @@ class NotesDataMapper : RoomDataMapper<DemoDataEntity, Note> {
 
 4. Modify DAO object created in point 1. to extend `BaseDao`, e.g.
 
-```
+```kotlin
 @Dao
 interface NoteLocalDao : BaseDao<Note> {
 
