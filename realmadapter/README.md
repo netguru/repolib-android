@@ -7,14 +7,14 @@ of all basic operation required by the interface like *create*, *update*, *delet
 ## Download
 To use this module with RepoLibRx in your project, add Netguru maven urls to the repositories blocks
 to the build.gradle in your project root dir:
-```
+```gradle
 repositories {
     maven {  url 'https://dl.bintray.com/netguru/maven/' }
 }
 ```
 
 Then add following dependencies to the app module build.gradle:
-```
+```gradle
 dependencies {
    implementation 'com.netguru.repolibrx:realmadapter:0.5'
 }
@@ -26,7 +26,7 @@ Follow this steps to setup adapter and create working DataSource interface imple
 
 1. Add and initialize Realm accordingly to its [documentation](https://realm.io/blog/realm-for-android/). 
 Then initialize `RealmConfiguration` accordingly to your needs, e.g.
-```
+```kotlin
 val realmConfig = RealmConfiguration.Builder()
             .name("realm database")
             .schemaVersion(1)
@@ -35,7 +35,7 @@ val realmConfig = RealmConfiguration.Builder()
 ```
 
 2. Create data entity that extends RealmObject, e.g.
-```
+```kotlin
 open class NoteLocalRealmObject : RealmObject() {
     var id: Long = UNDEFINED
     var value: String? = null
@@ -46,7 +46,7 @@ RepoLib Query objects to `RealmQuery` objects required by the Realm storage. Que
 include the property that holding the `Class` of the `RealmObject` created in step 2.  Below you can 
 find [example](https://github.com/netguru/repolib-android/blob/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/localstore/QueryMapper.kt) 
 of such implementation:
-```
+```kotlin
 class QueryMapper(override val daoClass: Class<NoteLocalRealmObject> = NoteLocalRealmObject::class.java)
     : RealmQueryMapper<NoteLocalRealmObject> {
 
@@ -68,7 +68,7 @@ class QueryMapper(override val daoClass: Class<NoteLocalRealmObject> = NoteLocal
 data models from RepoLib data model entity to `Realm` specific model that extends `RealmObject` 
 created in 1. Below you can find [example](https://github.com/netguru/repolib-android/blob/master/sample/src/main/kotlin/com/netguru/repolibrx/sample/feature/demo/datasource/localstore/DataMapper.kt) 
 of such implementation:
-```
+```kotlin
 class DataMapper : RealmDataMapper<DemoDataEntity, NoteLocalRealmObject> {
     private var highestId = UNDEFINED
 
@@ -97,7 +97,7 @@ Please note that Data mapper showed in example contains manual handling of *iden
  need to handle identifiers by yourself accordingly to your needs or project specification.
 
 5. Add `Identified` interface to your data model used by `RepoLib`, e.g.
-```
+```kotlin
 data class DemoDataEntity(
         override val id: Long = UNDEFINED,
         val value: String = "",
@@ -108,7 +108,7 @@ data class DemoDataEntity(
 5. Initialize RxRealmDataSource object with both mappers implementations and `RealmConfiguration` 
 initialized in previous steps, e.g.
 
-```
+```kotlin
 val localRealmDataSource = RxRealmDataSource(realmConfiguration, dataMapper, queryMapper)
 ```
 
